@@ -1,5 +1,7 @@
 export default function Accueil() {
     return (
-        <div>ACCUEIL</div>
+        <div>
+            Calendrier des évènements
+        </div>
     )
 }

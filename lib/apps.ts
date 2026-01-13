@@ -1,5 +1,6 @@
 // lib/apps.ts
-import { Croissant, Headset, Music, PersonStanding } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Croissant, Headset, Home, LibraryBig, Music, PenSquare, PersonStanding, Users } from "lucide-react";
 
 export const APPS = [
   { key: "accueil", href: "/accueil", label: "Accueil", Icon: Headset, colorClass: "text-green-500" },
@@ -10,3 +11,21 @@ export const APPS = [
 
 export type AppKey = (typeof APPS)[number]["key"];
 export type AppItem = (typeof APPS)[number];
+
+export type NavLink = { href: string; label: string; Icon?: LucideIcon };
+
+export const APP_NAV: Record<AppKey, NavLink[]> = {
+  accueil: [
+    { href: "/accueil", label: "Home", Icon: Home },
+    { href: "/accueil/posts", label: "Posts", Icon: PenSquare },
+    { href: "/accueil/archives", label: "Archives", Icon: LibraryBig },
+    { href: "/accueil/users", label: "Utilisateurs", Icon: Users },
+  ],
+
+  musique: [{ href: "/musique", label: "Home", Icon: Home }],
+
+  activites: [{ href: "/activites", label: "Home", Icon: Home  }],
+  
+  flce: [{ href: "/flce", label: "Home", Icon: Home }],
+
+} as const;
