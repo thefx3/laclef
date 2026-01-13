@@ -1,7 +1,8 @@
+// lib/supabase/proxy.ts
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -20,11 +21,10 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
+
   const isPublic =
     pathname === "/login" ||
     pathname.startsWith("/_next") ||
