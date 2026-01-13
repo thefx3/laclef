@@ -3,7 +3,6 @@
 import Header from "@/components/Header";
 import NavBar from "@/components/NavBar";
 import { APP_NAV, type AppKey } from "@/lib/apps";
-import { Sidebar } from "lucide-react";
 import { useSelectedLayoutSegments } from "next/navigation";
 
 

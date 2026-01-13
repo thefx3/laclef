@@ -1,7 +1,11 @@
+import PageShell from "@/components/page_layout/PageShell"
+import PageHeader from "@/components/page_layout/PageHeader"
+
 export default function Accueil() {
     return (
-        <div>
-            Calendrier des évènements
-        </div>
+        <PageShell>
+            <PageHeader title= "Calendrier des évènements" />
+            <div>HOME</div>
+        </PageShell>
     )
 }
