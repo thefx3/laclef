@@ -14,7 +14,7 @@ export default function NavBar() {
                     alt="La CLEF Logo"
                     width={96}
                     height={96}
-                    className="mx-auto mt-2 h-auto w-24 logo-white"
+                    className="mx-auto mt-2 h-24 w-24 logo-white"
                     priority
                   />
                 </Link>

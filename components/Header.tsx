@@ -12,17 +12,57 @@ export default function Header() {
 
   const [email, setEmail] = useState<string | null>(null);
 
+  const [role, setRole] = useState<string | null>(null);
+
   useEffect(() => {
     let mounted = true;
 
-    supabase.auth.getUser().then(({ data }) => {
-      if (mounted) {
-        setEmail(data.user?.email ?? null);
-      }
-    });
+    async function load() {
+      const { data } = await supabase.auth.getUser();
+      const user = data.user;
+      setEmail(user?.email ?? null);
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!user) return;
+
+      const { data: profile, error } = await supabase
+        .from("user_profiles")
+        .select("role")
+        .eq("user_id", user.id)
+        .single();
+
+        console.log("profile", profile, "error", error);
+
+      if (!mounted) return;
+
+      if (error) {
+        console.warn("Failed to load role", error);
+      } else {
+        setRole(profile?.role ?? null);
+      }
+    }
+
+    load();
+
+    const { data: sub } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setEmail(session?.user?.email ?? null);
+
+      if (session?.user) {
+        const { data: profile, error } = await supabase
+          .from("user_profiles")
+          .select("role")
+          .eq("user_id", session.user.id)
+          .single();
+
+        if (!mounted) return;
+        if (error) {
+          console.warn("Failed to load role", error);
+          setRole(null);
+        } else {
+          setRole(profile?.role ?? null);
+        }
+      } else {
+        setRole(null);
+      }
     });
 
     return () => {
@@ -30,6 +70,7 @@ export default function Header() {
       sub.subscription.unsubscribe();
     };
   }, [supabase]);
+
 
   async function logout() {
     await supabase.auth.signOut();
@@ -58,7 +99,10 @@ export default function Header() {
 
       <div className="flex text-sm text-black gap-2 items-center">
         {email ? (
-          <span>Connecté : <span className="font-medium text-gray-900">{email}</span></span>
+         <div className="text-sm text-gray-700">
+         Connecté : <span className="font-medium">{email ?? "—"}</span>
+         {role && <span className="ml-2 px-2 py-0.5 text-xs">{role}</span>}
+         </div>
         ) : (
           <span className="text-gray-400">Non connecté</span>
         )}
