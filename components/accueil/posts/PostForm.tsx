@@ -6,7 +6,6 @@ import type { PostType } from "@/lib/types";
 import { fromDateInputValue, toDateInputValue } from "@/lib/calendarUtils";
 import { TYPE_OPTIONS } from "./types";
 import type { CreatePostInput } from "@/lib/postsRepo";
-import { useAuth } from "@/components/AuthGate";
 import { cn } from "@/components/accueil/posts/cn";
 
 type Props = {
@@ -14,7 +13,6 @@ type Props = {
 };
 
 export function PostForm({ onCreate }: Props) {
-  const { session } = useAuth();
   const [content, setContent] = useState("");
   const [type, setType] = useState<PostType>("EVENT");
   const [isFeatured, setIsFeatured] = useState(false);
@@ -60,7 +58,7 @@ export function PostForm({ onCreate }: Props) {
   }
 
   return (
-    <section className="bg-[linear-gradient(100deg,#e0f4e6_20%,#abc6be_100%)] border p-4 rounded-xl text-white w-full">
+    <section className="bg-[linear-gradient(100deg,#e0f4e6_20%,#abc6be_100%)] border p-4 rounded-xl text-white">
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold text-gray-900">Poster un évènement</h1>
       </header>

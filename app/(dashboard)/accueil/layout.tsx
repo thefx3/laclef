@@ -1,4 +1,4 @@
-import { FeaturedSidebar } from "@/components/page_layout/FeaturedSideBar";
+import { FeaturedSidebarClient } from "@/components/page_layout/FeaturedSidebarClient";
 import type { ReactNode } from "react";
 
 export default function AccueilLayout({ children }: { children: ReactNode }) {
@@ -10,7 +10,7 @@ export default function AccueilLayout({ children }: { children: ReactNode }) {
           {children}
       </div>
       <div className="w-full min-w-0">
-          <FeaturedSidebar />
+        <FeaturedSidebarClient />
       </div>
 
     </div>    
