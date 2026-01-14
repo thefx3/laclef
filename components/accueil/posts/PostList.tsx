@@ -2,7 +2,7 @@
 
 import type { Post } from "@/lib/types";
 import { formatShortFR } from "@/lib/calendarUtils";
-import { cn } from "@/components/posts/cn";
+import { cn } from "@/components/accueil/posts/cn";
 
 type Props = {
   posts: Post[];

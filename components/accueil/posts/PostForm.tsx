@@ -7,7 +7,7 @@ import { fromDateInputValue, toDateInputValue } from "@/lib/calendarUtils";
 import { TYPE_OPTIONS } from "./types";
 import type { CreatePostInput } from "@/lib/postsRepo";
 import { useAuth } from "@/components/AuthGate";
-import { cn } from "@/components/posts/cn";
+import { cn } from "@/components/accueil/posts/cn";
 
 type Props = {
   onCreate: (input: CreatePostInput) => Promise<void> | void;

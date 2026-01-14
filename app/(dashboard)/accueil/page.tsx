@@ -1,6 +1,6 @@
 import PageShell from "@/components/page_layout/PageShell"
 import PageHeader from "@/components/page_layout/PageHeader"
-import CalendarView from "@/components/accueil/CalendarView"
+import CalendarViewClient from "@/components/accueil/CalendarViewClient"
 
 export default function Accueil() {
     return (
@@ -8,7 +8,7 @@ export default function Accueil() {
             <PageHeader title= "Calendrier des évènements" />
             {/* <Publish /> */}
 
-            <CalendarView />
+            <CalendarViewClient />
         </PageShell>
     )
 }
