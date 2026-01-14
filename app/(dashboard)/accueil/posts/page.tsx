@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { PostModal } from "@/components/accueil/calendar/PostModal";
 import { PostFilters } from "@/components/accueil/posts/PostFilters";
