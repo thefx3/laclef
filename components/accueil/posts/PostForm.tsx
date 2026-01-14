@@ -59,9 +59,7 @@ export function PostForm({ onCreate }: Props) {
 
   return (
     <section className="bg-[linear-gradient(100deg,#e0f4e6_20%,#abc6be_100%)] border p-4 rounded-xl text-white">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold text-gray-900">Poster un évènement</h1>
-      </header>
+
       {message && <p className="text-sm text-red-600 mt-2">{message}</p>}
       <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
         <div className="md:col-span-2 flex flex-row gap-2">
