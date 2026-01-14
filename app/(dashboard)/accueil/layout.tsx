@@ -9,7 +9,6 @@ export default function AccueilLayout({ children }: { children: ReactNode }) {
       <div className="w-full min-w-0">
           {children}
       </div>
-
       <div className="w-full min-w-0">
           <FeaturedSidebar />
       </div>
