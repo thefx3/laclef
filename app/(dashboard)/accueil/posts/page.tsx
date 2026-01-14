@@ -64,21 +64,12 @@ function PostsPageContent() {
     return base;
   }, [filterMode, filterDate, posts]);
 
-  useEffect(() => {
-    setPageIndex(0);
-  }, [filterMode, filterDate]);
-
   const pageCount = Math.max(1, Math.ceil(filteredPosts.length / pageSize));
-
-  useEffect(() => {
-    if (pageIndex > pageCount - 1) {
-      setPageIndex(Math.max(0, pageCount - 1));
-    }
-  }, [pageIndex, pageCount]);
+  const safePageIndex = Math.min(pageIndex, pageCount - 1);
 
   const pagePosts = filteredPosts.slice(
-    pageIndex * pageSize,
-    (pageIndex + 1) * pageSize
+    safePageIndex * pageSize,
+    (safePageIndex + 1) * pageSize
   );
   return (
     <PageShell>
@@ -90,8 +81,14 @@ function PostsPageContent() {
         <PostFilters
           filterMode={filterMode}
           filterDate={filterDate}
-          onChangeMode={setFilterMode}
-          onChangeDate={setFilterDate}
+          onChangeMode={(mode) => {
+            setFilterMode(mode);
+            setPageIndex(0);
+          }}
+          onChangeDate={(value) => {
+            setFilterDate(value);
+            setPageIndex(0);
+          }}
         />
         <div className="flex flex-wrap items-center gap-2 mb-4">
           <button
@@ -106,18 +103,18 @@ function PostsPageContent() {
             Précédent
           </button>
           <span className="text-sm text-gray-600">
-            Page {pageCount === 0 ? 0 : pageIndex + 1} / {pageCount}
+            Page {pageCount === 0 ? 0 : safePageIndex + 1} / {pageCount}
           </span>
           <button
             className={cn(
               "btn-filter",
               "btn-filter--inactive",
-              pageIndex >= pageCount - 1 && "opacity-50 cursor-not-allowed"
+              safePageIndex >= pageCount - 1 && "opacity-50 cursor-not-allowed"
             )}
             onClick={() =>
               setPageIndex((prev) => Math.min(pageCount - 1, prev + 1))
             }
-            disabled={pageIndex >= pageCount - 1}
+            disabled={safePageIndex >= pageCount - 1}
           >
             Suivant
           </button>
