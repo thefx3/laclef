@@ -129,6 +129,7 @@ function PostsPageContent() {
             Erreur lors du chargement des posts.
           </p>
         )}
+        
         <PostList
           posts={pagePosts}
           onSelect={setSelected}

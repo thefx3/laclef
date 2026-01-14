@@ -21,6 +21,7 @@ import { DayModal } from "./calendar/DayModal";
 import { PostGrid } from "./calendar/PostGrid";
 import { PostList } from "./calendar/PostList";
 import { PostEditModal } from "@/components/accueil/posts/PostEditModal";
+import { cn } from "@/components/accueil/posts/cn";
 
 type CalendarViewProps = {
   posts?: Post[];
@@ -154,19 +155,8 @@ export default function CalendarView({
 
   const isDayMode = mode === "day";
 
-  const buttonBase =
-    "px-3 py-2 rounded-lg border text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer";
-
   const arrowBase =
     "h-10 w-10 pb-2 flex items-center justify-center shrink-0 rounded-lg text-4xl leading-none hover:scale-95 transition-colors cursor-pointer";
-
-  function modeButtonClass(active: boolean) {
-    return `${buttonBase} ${
-      active
-        ? "bg-[#f0e8e0] text-[#268a42] border-blue-200"
-        : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:shadow-md cursor-pointer"
-    }`;
-  }
 
   return (
     <section className="w-full" suppressHydrationWarning>
@@ -176,7 +166,10 @@ export default function CalendarView({
           {MODES.map((m) => (
             <button
               key={m.key}
-              className={modeButtonClass(mode === m.key)}
+              className={cn(
+                "btn-filter",
+                mode === m.key ? "btn-filter--active" : "btn-filter--inactive"
+              )}
               onClick={() => setModeAndReset(m.key)}
               >
               {m.label}
@@ -194,7 +187,7 @@ export default function CalendarView({
           >
             ←
           </button>
-          <div className="text-sm font-semibold text-gray-900">
+          <div className="text-sm font-semibold text-[var(--foreground)]">
             {modeLabel} : {formatPeriodRecap()}
           </div>
 
@@ -222,8 +215,8 @@ export default function CalendarView({
               <div
                 className={`px-3 py-2 font-semibold cursor-pointer ${
                   isSameDay(day, today)
-                    ? "bg-[#2d9341] text-white"
-                    : "bg-gray-800 text-white"
+                    ? "bg-[var(--accent)] text-[var(--surface)]"
+                    : "bg-[var(--primary)] text-[var(--surface)]"
                 }`}
                 onClick={() => {
                   setMode("day");

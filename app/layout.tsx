@@ -22,7 +22,7 @@ export default function RootLayout({ children,}: Readonly<{children: React.React
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-y-auto`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-y-scroll`}
       >
         {children}
       </body>
