@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import PageShell from "@/components/page_layout/PageShell";
 import PageHeader from "@/components/page_layout/PageHeader";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -51,21 +51,24 @@ export default function UsersPage() {
       };
     }, [supabase]);
 
-    async function loadUsers(active: { value: boolean }) {
-      const { data, error } = await supabase
-        .from("user_profiles")
-        .select("user_id,email,first_name,last_name,role,created_at")
-        .order("created_at", { ascending: false });
-  
-      if (!active.value) return;
-      if (error) {
-        setError(error.message);
+    const loadUsers = useCallback(
+      async (active: { value: boolean }) => {
+        const { data, error } = await supabase
+          .from("user_profiles")
+          .select("user_id,email,first_name,last_name,role,created_at")
+          .order("created_at", { ascending: false });
+
+        if (!active.value) return;
+        if (error) {
+          setError(error.message);
+          setLoading(false);
+          return;
+        }
+        setUsers((data as UserProfileRow[]) ?? []);
         setLoading(false);
-        return;
-      }
-      setUsers((data as UserProfileRow[]) ?? []);
-      setLoading(false);
-    }
+      },
+      [supabase]
+    );
   
     useEffect(() => {
       const active = { value: true };
@@ -76,7 +79,7 @@ export default function UsersPage() {
       return () => {
         active.value = false;
       };
-    }, []);
+    }, [loadUsers]);
   
     useEffect(() => {
       if (!session) return;
@@ -122,11 +125,11 @@ export default function UsersPage() {
     return (
         <PageShell>
             <PageHeader title="Utilisateurs" />
-            {isGuest && (
-        <p className="text-sm text-amber-700">
-          Mode invité : création/modification d&apos;utilisateurs désactivée.
-        </p>
-      )}
+        {isGuest && (
+            <p className="text-sm text-amber-700">
+            Mode invité : création/modification d&apos;utilisateurs désactivée.
+            </p>
+        )}
 
       {canCreateUser && (
         <section className="w-full rounded-xl border border-gray-200 bg-white p-4">

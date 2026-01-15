@@ -22,10 +22,16 @@ export const APP_NAV: Record<AppKey, NavLink[]> = {
     { href: "/accueil/users", label: "Utilisateurs", Icon: Users },
   ],
 
-  musique: [{ href: "/musique", label: "Home", Icon: Home }],
+  musique: [
+    { href: "/musique", label: "Home", Icon: Home },
+    { href: "/musique/users", label: "Utilisateurs", Icon: Users }
+  ],
 
   activites: [{ href: "/activites", label: "Home", Icon: Home  }],
   
-  flce: [{ href: "/flce", label: "Home", Icon: Home }],
+  flce: [
+    { href: "/flce", label: "Home", Icon: Home },
+    { href: "/flce/users", label: "Utilisateurs", Icon: Users }
+  ],
 
 } as const;

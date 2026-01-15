@@ -62,6 +62,7 @@ export default function NavBar({ links }: { links: NavLink[]}) {
               );
             })}
           </nav>
+
   </div>
     )
 }
