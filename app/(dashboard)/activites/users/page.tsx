@@ -1,7 +1,7 @@
-export default function UsersPage() {
+import UsersPage from "@/components/UsersPage";
+
+export default function Users() {
     return (
-        <div>
-            Utilisateurs
-        </div>
+        <UsersPage />
     )
 }

@@ -27,7 +27,10 @@ export const APP_NAV: Record<AppKey, NavLink[]> = {
     { href: "/musique/users", label: "Utilisateurs", Icon: Users }
   ],
 
-  activites: [{ href: "/activites", label: "Home", Icon: Home  }],
+  activites: [
+    { href: "/activites", label: "Home", Icon: Home  },
+    { href: "/activites/users", label: "Utilisateurs", Icon: Users }
+  ],
   
   flce: [
     { href: "/flce", label: "Home", Icon: Home },
