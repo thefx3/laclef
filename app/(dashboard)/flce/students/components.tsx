@@ -5,6 +5,7 @@ import { cn } from "@/components/accueil/posts/cn";
 import { Modal } from "@/components/accueil/calendar/Modal";
 import type { EditFormState, SortKey, SortState, StudentRow, Tab } from "./types";
 import { deriveRecordKind, formatAge, formatDate, formatGender, formatYesNo } from "./utils";
+import { useSeason } from "../season-context";
 
 type TabButtonProps = {
   label: string;
@@ -345,9 +346,24 @@ type StudentFormFieldsProps = {
 };
 
 function StudentFormFieldsBase({ form, onChange }: StudentFormFieldsProps) {
+  const { seasons } = useSeason();
+
   return (
     <>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-3">
+      <label className="block text-sm font-semibold text-gray-900">
+          Genre
+          <select
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            value={form.gender || ""}
+            onChange={(event) => onChange({ gender: event.target.value as "M" | "F" | "X" | "" })}
+          >
+            <option value="">—</option>
+            <option value="M">Mr.</option>
+            <option value="F">Mrs.</option>
+            <option value="X">X</option>
+          </select>
+        </label>
         <label className="block text-sm font-semibold text-gray-900">
           Prénom
           <input
@@ -376,6 +392,24 @@ function StudentFormFieldsBase({ form, onChange }: StudentFormFieldsProps) {
           />
         </label>
         <label className="block text-sm font-semibold text-gray-900">
+          Saison
+          <select
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            value={form.season_id}
+            onChange={(event) => onChange({ season_id: event.target.value })}
+          >
+            <option value="">—</option>
+            {seasons.map((season) => (
+              <option key={season.id} value={season.id}>
+                {season.code}
+              </option>
+            ))}
+          </select>
+        </label>
+
+      </div>
+
+      <label className="block text-sm font-semibold text-gray-900">
           Note
           <input
             className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -383,21 +417,7 @@ function StudentFormFieldsBase({ form, onChange }: StudentFormFieldsProps) {
             onChange={(event) => onChange({ note: event.target.value })}
           />
         </label>
-      </div>
 
-      <label className="block text-sm font-semibold text-gray-900">
-        Genre
-        <select
-          className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-          value={form.gender || ""}
-          onChange={(event) => onChange({ gender: event.target.value as "M" | "F" | "X" | "" })}
-        >
-          <option value="">—</option>
-          <option value="M">Mr.</option>
-          <option value="F">Mrs.</option>
-          <option value="X">X</option>
-        </select>
-      </label>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="block text-sm font-semibold text-gray-900">

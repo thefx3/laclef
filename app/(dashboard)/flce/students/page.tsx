@@ -14,9 +14,11 @@ import {
 } from "./components";
 import type { EditFormState, SortKey, SortState, StudentRow, Tab } from "./types";
 import { buildEditForm, deriveRecordKind, EMPTY_FORM, getAge, validateEditForm } from "./utils";
+import { useSeason } from "../season-context";
 
 export default function StudentsPage() {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const { selectedSeasonId } = useSeason();
   const [tab, setTab] = useState<Tab>("ENROLLED");
   const [enrolled, setEnrolled] = useState<StudentRow[]>([]);
   const [preRegistered, setPreRegistered] = useState<StudentRow[]>([]);
@@ -110,6 +112,11 @@ export default function StudentsPage() {
     setLoading(true);
     setError(null);
 
+    const withSeason = (query: ReturnType<typeof supabase.from>) => {
+      if (!selectedSeasonId) return query;
+      return query.eq("season_id", selectedSeasonId);
+    };
+
     const [
       { data: enrolledData, error: e1 },
       { data: preRegisteredData, error: e2 },
@@ -117,26 +124,30 @@ export default function StudentsPage() {
       { data: leftData, error: e4 },
     ] =
       await Promise.all([
-        supabase
-          .from("students")
-          .select("*, au_pair_details(*)")
-          .eq("record_kind", "ENROLLED")
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("students")
-          .select("*, au_pair_details(*)")
-          .eq("record_kind", "PRE_REGISTERED")
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("students")
-          .select("*, au_pair_details(*)")
-          .eq("record_kind", "LEAD")
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("students")
-          .select("*, au_pair_details(*)")
-          .eq("record_kind", "LEFT")
-          .order("created_at", { ascending: false }),
+        withSeason(
+          supabase
+            .from("students")
+            .select("*, au_pair_details(*)")
+            .eq("record_kind", "ENROLLED")
+        ).order("created_at", { ascending: false }),
+        withSeason(
+          supabase
+            .from("students")
+            .select("*, au_pair_details(*)")
+            .eq("record_kind", "PRE_REGISTERED")
+        ).order("created_at", { ascending: false }),
+        withSeason(
+          supabase
+            .from("students")
+            .select("*, au_pair_details(*)")
+            .eq("record_kind", "LEAD")
+        ).order("created_at", { ascending: false }),
+        withSeason(
+          supabase
+            .from("students")
+            .select("*, au_pair_details(*)")
+            .eq("record_kind", "LEFT")
+        ).order("created_at", { ascending: false }),
       ]);
 
     if (e1 || e2 || e3 || e4) {
@@ -150,28 +161,35 @@ export default function StudentsPage() {
     setLeads((leadsData as StudentRow[]) ?? []);
     setLeftEarly((leftData as StudentRow[]) ?? []);
     setLoading(false);
-  }, [supabase]);
+  }, [supabase, selectedSeasonId]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching triggers state updates by design.
     void load();
   }, [load]);
 
-  const startEditing = useCallback((student: StudentRow) => {
-    setEditingStudent(student);
-    setEditForm(buildEditForm(student));
-    setEditingErrors([]);
-  }, []);
+  const startEditing = useCallback(
+    (student: StudentRow) => {
+      setEditingStudent(student);
+      const baseForm = buildEditForm(student);
+      setEditForm({
+        ...baseForm,
+        season_id: student.season_id ?? selectedSeasonId ?? "",
+      });
+      setEditingErrors([]);
+    },
+    [selectedSeasonId]
+  );
 
   const updateForm = useCallback((patch: Partial<EditFormState>) => {
     setEditForm((prev) => ({ ...prev, ...patch }));
   }, []);
 
   const startCreate = useCallback(() => {
-    setCreateForm({ ...EMPTY_FORM });
+    setCreateForm({ ...EMPTY_FORM, season_id: selectedSeasonId ?? "" });
     setCreateErrors([]);
     setCreateOpen(true);
-  }, []);
+  }, [selectedSeasonId]);
 
   const updateCreateForm = useCallback((patch: Partial<EditFormState>) => {
     setCreateForm((prev) => ({ ...prev, ...patch }));
@@ -193,12 +211,49 @@ export default function StudentsPage() {
     setDeleteCandidate(student);
   }, []);
 
+  const isDossierNumberTaken = useCallback(
+    async (dossierNumber: string, excludeId?: string) => {
+      if (!dossierNumber.trim()) return false;
+      let query = supabase
+        .from("students")
+        .select("id")
+        .eq("dossier_number", dossierNumber.trim());
+      if (excludeId) {
+        query = query.neq("id", excludeId);
+      }
+      const { data, error } = await query;
+      if (error) throw error;
+      return (data?.length ?? 0) > 0;
+    },
+    [supabase]
+  );
+
+  function hasDepartureBeforeArrival(arrival: string, departure: string) {
+    if (!arrival || !departure) return false;
+    return new Date(departure).getTime() < new Date(arrival).getTime();
+  }
+
   const createStudent = useCallback(async () => {
     setCreateErrors([]);
     setLoading(true);
     setError(null);
 
     const nextErrors = validateEditForm(createForm);
+    if (hasDepartureBeforeArrival(createForm.arrival_date, createForm.departure_date)) {
+      nextErrors.push("La date de départ ne peut pas être antérieure à la date d'arrivée.");
+    }
+    if (createForm.dossier_number.trim()) {
+      try {
+        const taken = await isDossierNumberTaken(createForm.dossier_number);
+        if (taken) {
+          nextErrors.push("Le numéro de dossier est déjà utilisé.");
+        }
+      } catch (err) {
+        setError((err as Error).message);
+        setLoading(false);
+        return;
+      }
+    }
     if (nextErrors.length > 0) {
       setCreateErrors(nextErrors);
       setLoading(false);
@@ -220,6 +275,7 @@ export default function StudentsPage() {
       birth_place: createForm.birth_place.trim() || null,
       is_au_pair: createForm.is_au_pair,
       left_early: createForm.left_early,
+      season_id: createForm.season_id || null,
       pre_registration: createForm.pre_registration,
       paid_150: createForm.paid_150 ? true : null,
       paid_total: createForm.paid_total,
@@ -234,7 +290,11 @@ export default function StudentsPage() {
       .single();
 
     if (insertError) {
-      setError(insertError.message);
+      if (insertError.message.includes("students_dossier_number_key")) {
+        setCreateErrors(["Le numéro de dossier est déjà utilisé."]);
+      } else {
+        setError(insertError.message);
+      }
       setLoading(false);
       return;
     }
@@ -260,7 +320,7 @@ export default function StudentsPage() {
 
     setCreateOpen(false);
     await load();
-  }, [createForm, load, supabase]);
+  }, [createForm, load, supabase, selectedSeasonId]);
 
   const saveEditingStudent = useCallback(async () => {
     if (!editingStudent) return;
@@ -269,6 +329,24 @@ export default function StudentsPage() {
     setError(null);
 
     const nextErrors = validateEditForm(editForm);
+    if (hasDepartureBeforeArrival(editForm.arrival_date, editForm.departure_date)) {
+      nextErrors.push("La date de départ ne peut pas être antérieure à la date d'arrivée.");
+    }
+    if (editForm.dossier_number.trim()) {
+      try {
+        const taken = await isDossierNumberTaken(
+          editForm.dossier_number,
+          editingStudent.id
+        );
+        if (taken) {
+          nextErrors.push("Le numéro de dossier est déjà utilisé.");
+        }
+      } catch (err) {
+        setError((err as Error).message);
+        setLoading(false);
+        return;
+      }
+    }
     if (nextErrors.length > 0) {
       setEditingErrors(nextErrors);
       setLoading(false);
@@ -290,6 +368,7 @@ export default function StudentsPage() {
       birth_place: editForm.birth_place.trim() || null,
       is_au_pair: editForm.is_au_pair,
       left_early: editForm.left_early,
+      season_id: editForm.season_id || null,
       pre_registration: editForm.pre_registration,
       paid_150: editForm.paid_150 ? true : null,
       paid_total: editForm.paid_total,
@@ -303,7 +382,11 @@ export default function StudentsPage() {
       .eq("id", editingStudent.id);
 
     if (updateError) {
-      setError(updateError.message);
+      if (updateError.message.includes("students_dossier_number_key")) {
+        setEditingErrors(["Le numéro de dossier est déjà utilisé."]);
+      } else {
+        setError(updateError.message);
+      }
       setLoading(false);
       return;
     }

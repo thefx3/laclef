@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { APPS } from "@/lib/apps";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
+import { SeasonSelector } from "@/app/(dashboard)/flce/season-context";
 
 export default function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createSupabaseBrowserClient();
 
   const [email, setEmail] = useState<string | null>(null);
@@ -81,6 +83,8 @@ export default function Header() {
   const iconClass =
     "h-10 w-10 border border-black p-2 rounded-md transition-transform cursor-pointer hover:scale-95 hover:bg-black hover:text-white";
 
+  const showSeasonSelector = pathname?.startsWith("/flce");
+
   return (
     <header className="flex w-full items-center justify-between bg-white border-b px-4 py-4 shadow-sm">
       <div className="flex items-center gap-4 ml-4">
@@ -96,6 +100,12 @@ export default function Header() {
           </Link>
         ))}
       </div>
+
+      {showSeasonSelector && (
+        <div className="hidden lg:block">
+          <SeasonSelector />
+        </div>
+      )}
 
       <div className="flex text-sm text-black gap-2 items-center">
         {email ? (

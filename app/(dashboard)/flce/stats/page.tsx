@@ -5,6 +5,7 @@ import PageHeader from "@/components/page_layout/PageHeader";
 import PageShell from "@/components/page_layout/PageShell";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { getAge } from "@/app/(dashboard)/flce/students/utils";
+import { useSeason } from "../season-context";
 import {
   Bar,
   BarChart,
@@ -69,6 +70,7 @@ function withColor(
 
 export default function Stats() {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const { selectedSeasonId } = useSeason();
   const [rows, setRows] = useState<StudentStatRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,11 +81,15 @@ export default function Stats() {
     async function load() {
       setLoading(true);
       setError(null);
-      const { data, error: fetchError } = await supabase
+      let query = supabase
         .from("students")
         .select(
           "record_kind, gender, is_au_pair, class_code, birth_place, birth_date, arrival_date"
         );
+      if (selectedSeasonId) {
+        query = query.eq("season_id", selectedSeasonId);
+      }
+      const { data, error: fetchError } = await query;
 
       if (!mounted) return;
 
@@ -101,7 +107,7 @@ export default function Stats() {
     return () => {
       mounted = false;
     };
-  }, [supabase]);
+  }, [supabase, selectedSeasonId]);
 
   const totals = useMemo(() => {
     const status = { enrolled: 0, pre: 0, lead: 0, left: 0 };

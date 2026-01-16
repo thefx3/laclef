@@ -35,7 +35,7 @@ export const APP_NAV: Record<AppKey, NavLink[]> = {
   flce: [
     { href: "/flce", label: "Home", Icon: Home },
     { href: "/flce/students", label: "Elèves", Icon: BookUser },
-    { href: "/flce/classes", label: "Classes", Icon: Blocks},
+    { href: "/flce/organisation", label: "Organisation", Icon: Blocks},
     { href: "/flce/documents", label: "Documents", Icon: Files },
     { href: "/flce/stats", label: "Stats", Icon: ChartNoAxesCombined },
 

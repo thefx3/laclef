@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import PageHeader from "@/components/page_layout/PageHeader";
 import PageShell from "@/components/page_layout/PageShell";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useSeason } from "./season-context";
 
 async function getCount(query: PromiseLike<{ count: number | null; error: { message: string } | null }>) {
   const { count, error } = await query;
@@ -57,6 +58,7 @@ function StatCard({
 
 export default function Flce() {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const { selectedSeasonId } = useSeason();
   const [stats, setStats] = useState<{
     total: number;
     enrolled: number;
@@ -75,56 +77,80 @@ export default function Flce() {
     setLoading(true);
     setLoadError(null);
     try {
+      const withSeason = (query: ReturnType<typeof supabase.from>) => {
+        if (!selectedSeasonId) return query;
+        return query.eq("season_id", selectedSeasonId);
+      };
       const [total, enrolled, preRegistered, leads, left, auPairs, nonAuPairs, hommes, femmes] =
         await Promise.all([
-          getCount(supabase.from("students").select("id", { count: "exact", head: true })),
           getCount(
-            supabase
-              .from("students")
-              .select("id", { count: "exact", head: true })
-              .eq("record_kind", "ENROLLED")
+            withSeason(
+              supabase.from("students").select("id", { count: "exact", head: true })
+            )
           ),
           getCount(
-            supabase
-              .from("students")
-              .select("id", { count: "exact", head: true })
-              .eq("record_kind", "PRE_REGISTERED")
+            withSeason(
+              supabase
+                .from("students")
+                .select("id", { count: "exact", head: true })
+                .eq("record_kind", "ENROLLED")
+            )
           ),
           getCount(
-            supabase
-              .from("students")
-              .select("id", { count: "exact", head: true })
-              .eq("record_kind", "LEAD")
+            withSeason(
+              supabase
+                .from("students")
+                .select("id", { count: "exact", head: true })
+                .eq("record_kind", "PRE_REGISTERED")
+            )
           ),
           getCount(
-            supabase
-              .from("students")
-              .select("id", { count: "exact", head: true })
-              .eq("record_kind", "LEFT")
+            withSeason(
+              supabase
+                .from("students")
+                .select("id", { count: "exact", head: true })
+                .eq("record_kind", "LEAD")
+            )
           ),
           getCount(
-            supabase
-              .from("students")
-              .select("id", { count: "exact", head: true })
-              .eq("is_au_pair", true)
+            withSeason(
+              supabase
+                .from("students")
+                .select("id", { count: "exact", head: true })
+                .eq("record_kind", "LEFT")
+            )
           ),
           getCount(
-            supabase
-              .from("students")
-              .select("id", { count: "exact", head: true })
-              .eq("is_au_pair", false)
+            withSeason(
+              supabase
+                .from("students")
+                .select("id", { count: "exact", head: true })
+                .eq("is_au_pair", true)
+            )
           ),
           getCount(
-            supabase
-              .from("students")
-              .select("id", { count: "exact", head: true })
-              .eq("gender", "M")
+            withSeason(
+              supabase
+                .from("students")
+                .select("id", { count: "exact", head: true })
+                .eq("is_au_pair", false)
+            )
           ),
           getCount(
-            supabase
-              .from("students")
-              .select("id", { count: "exact", head: true })
-              .eq("gender", "F")
+            withSeason(
+              supabase
+                .from("students")
+                .select("id", { count: "exact", head: true })
+                .eq("gender", "M")
+            )
+          ),
+          getCount(
+            withSeason(
+              supabase
+                .from("students")
+                .select("id", { count: "exact", head: true })
+                .eq("gender", "F")
+            )
           ),
         ]);
       setStats({
@@ -144,7 +170,7 @@ export default function Flce() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [supabase, selectedSeasonId]);
 
   useEffect(() => {
     void loadStats();

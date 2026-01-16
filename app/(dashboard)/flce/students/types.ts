@@ -19,6 +19,7 @@ export type StudentRow = {
   birth_place: string | null;
   is_au_pair: boolean;
   left_early: boolean | null;
+  season_id: string | null;
   pre_registration: boolean;
   paid_150: boolean | null;
   paid_total: boolean;
@@ -42,6 +43,7 @@ export type EditFormState = {
   birth_place: string;
   is_au_pair: boolean;
   left_early: boolean;
+  season_id: string;
   pre_registration: boolean;
   paid_150: boolean;
   paid_total: boolean;
