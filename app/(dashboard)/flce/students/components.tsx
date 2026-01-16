@@ -152,7 +152,9 @@ function StudentsTableBase({
                     ? "Inscrit"
                     : student.record_kind === "PRE_REGISTERED"
                       ? "En cours"
-                      : "Lead"}
+                      : student.record_kind === "LEFT"
+                        ? "Sorti"
+                        : "Lead"}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-2">
@@ -417,6 +419,16 @@ function StudentFormFieldsBase({ form, onChange }: StudentFormFieldsProps) {
           />
         </label>
       </div>
+
+      <label className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+        <input
+          className="h-4 w-4 rounded border-gray-300"
+          type="checkbox"
+          checked={form.left_early}
+          onChange={(event) => onChange({ left_early: event.target.checked })}
+        />
+        Départ anticipé
+      </label>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="block text-sm font-semibold text-gray-900">

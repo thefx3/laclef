@@ -14,7 +14,7 @@ export function Modal({ children, onClose }: ModalProps) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg rounded-xl bg-white p-4 shadow-lg"
+        className="relative w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-xl bg-white p-4 shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
         {children}

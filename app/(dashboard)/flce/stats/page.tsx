@@ -104,7 +104,7 @@ export default function Stats() {
   }, [supabase]);
 
   const totals = useMemo(() => {
-    const status = { enrolled: 0, pre: 0, lead: 0 };
+    const status = { enrolled: 0, pre: 0, lead: 0, left: 0 };
     const gender = { M: 0, F: 0, X: 0, unknown: 0 };
     const auPair = { yes: 0, no: 0, unknown: 0 };
     const classCounts = new Map<string, number>();
@@ -124,6 +124,7 @@ export default function Stats() {
       if (row.record_kind === "ENROLLED") status.enrolled += 1;
       else if (row.record_kind === "PRE_REGISTERED") status.pre += 1;
       else if (row.record_kind === "LEAD") status.lead += 1;
+      else if (row.record_kind === "LEFT") status.left += 1;
 
       if (row.gender === "M") gender.M += 1;
       else if (row.gender === "F") gender.F += 1;
@@ -197,11 +198,13 @@ export default function Stats() {
       { name: "Inscrits", value: totals.status.enrolled },
       { name: "Pre-inscrits", value: totals.status.pre },
       { name: "Leads", value: totals.status.lead },
+      { name: "Sortis", value: totals.status.left },
     ],
     {
       Inscrits: palette.emerald,
       "Pre-inscrits": palette.amber,
       Leads: palette.sky,
+      Sortis: palette.rose,
     },
     palette.neutral
   );
@@ -245,11 +248,12 @@ export default function Stats() {
 
       {!loading && !error && (
         <div className="space-y-8">
-          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <StatCard label="Total eleves" value={rows.length} />
             <StatCard label="Inscrits" value={totals.status.enrolled} />
             <StatCard label="Pre-inscrits" value={totals.status.pre} />
             <StatCard label="Leads" value={totals.status.lead} />
+            <StatCard label="Sortis" value={totals.status.left} />
           </section>
 
         {/* GRAPH 1 */}

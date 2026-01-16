@@ -21,6 +21,7 @@ export default function StudentsPage() {
   const [enrolled, setEnrolled] = useState<StudentRow[]>([]);
   const [preRegistered, setPreRegistered] = useState<StudentRow[]>([]);
   const [leads, setLeads] = useState<StudentRow[]>([]);
+  const [leftEarly, setLeftEarly] = useState<StudentRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortState, setSortState] = useState<SortState>(null);
@@ -44,8 +45,9 @@ export default function StudentsPage() {
   const active = useMemo(() => {
     if (tab === "ENROLLED") return enrolled;
     if (tab === "PRE_REGISTERED") return preRegistered;
+    if (tab === "LEFT") return leftEarly;
     return leads;
-  }, [enrolled, leads, preRegistered, tab]);
+  }, [enrolled, leads, leftEarly, preRegistered, tab]);
 
   const filteredActive = useMemo(() => {
     return active.filter((student) => {
@@ -100,7 +102,7 @@ export default function StudentsPage() {
 
   const emptyColSpan = useMemo(() => {
     if (tab === "ENROLLED") return 16;
-    if (tab === "PRE_REGISTERED") return 15;
+    if (tab === "PRE_REGISTERED" || tab === "LEFT") return 15;
     return 12;
   }, [tab]);
 
@@ -112,6 +114,7 @@ export default function StudentsPage() {
       { data: enrolledData, error: e1 },
       { data: preRegisteredData, error: e2 },
       { data: leadsData, error: e3 },
+      { data: leftData, error: e4 },
     ] =
       await Promise.all([
         supabase
@@ -129,10 +132,15 @@ export default function StudentsPage() {
           .select("*, au_pair_details(*)")
           .eq("record_kind", "LEAD")
           .order("created_at", { ascending: false }),
+        supabase
+          .from("students")
+          .select("*, au_pair_details(*)")
+          .eq("record_kind", "LEFT")
+          .order("created_at", { ascending: false }),
       ]);
 
-    if (e1 || e2 || e3) {
-      setError((e1 ?? e2 ?? e3)?.message ?? "Erreur chargement");
+    if (e1 || e2 || e3 || e4) {
+      setError((e1 ?? e2 ?? e3 ?? e4)?.message ?? "Erreur chargement");
       setLoading(false);
       return;
     }
@@ -140,6 +148,7 @@ export default function StudentsPage() {
     setEnrolled((enrolledData as StudentRow[]) ?? []);
     setPreRegistered((preRegisteredData as StudentRow[]) ?? []);
     setLeads((leadsData as StudentRow[]) ?? []);
+    setLeftEarly((leftData as StudentRow[]) ?? []);
     setLoading(false);
   }, [supabase]);
 
@@ -210,6 +219,7 @@ export default function StudentsPage() {
       birth_date: createForm.birth_date || null,
       birth_place: createForm.birth_place.trim() || null,
       is_au_pair: createForm.is_au_pair,
+      left_early: createForm.left_early,
       pre_registration: createForm.pre_registration,
       paid_150: createForm.paid_150 ? true : null,
       paid_total: createForm.paid_total,
@@ -279,6 +289,7 @@ export default function StudentsPage() {
       birth_date: editForm.birth_date || null,
       birth_place: editForm.birth_place.trim() || null,
       is_au_pair: editForm.is_au_pair,
+      left_early: editForm.left_early,
       pre_registration: editForm.pre_registration,
       paid_150: editForm.paid_150 ? true : null,
       paid_total: editForm.paid_total,
@@ -374,6 +385,11 @@ export default function StudentsPage() {
             label={`Non inscrits (${leads.length})`}
             active={tab === "LEAD"}
             onClick={() => setTab("LEAD")}
+          />
+          <TabButton
+            label={`Sortis (${leftEarly.length})`}
+            active={tab === "LEFT"}
+            onClick={() => setTab("LEFT")}
           />
         </div>
         <button className="btn-primary" onClick={startCreate} type="button">

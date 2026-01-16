@@ -62,6 +62,7 @@ export default function Flce() {
     enrolled: number;
     preRegistered: number;
     leads: number;
+    left: number;
     auPairs: number;
     nonAuPairs: number;
     hommes: number;
@@ -74,7 +75,7 @@ export default function Flce() {
     setLoading(true);
     setLoadError(null);
     try {
-      const [total, enrolled, preRegistered, leads, auPairs, nonAuPairs, hommes, femmes] =
+      const [total, enrolled, preRegistered, leads, left, auPairs, nonAuPairs, hommes, femmes] =
         await Promise.all([
           getCount(supabase.from("students").select("id", { count: "exact", head: true })),
           getCount(
@@ -94,6 +95,12 @@ export default function Flce() {
               .from("students")
               .select("id", { count: "exact", head: true })
               .eq("record_kind", "LEAD")
+          ),
+          getCount(
+            supabase
+              .from("students")
+              .select("id", { count: "exact", head: true })
+              .eq("record_kind", "LEFT")
           ),
           getCount(
             supabase
@@ -120,7 +127,17 @@ export default function Flce() {
               .eq("gender", "F")
           ),
         ]);
-      setStats({ total, enrolled, preRegistered, leads, auPairs, nonAuPairs, hommes, femmes });
+      setStats({
+        total,
+        enrolled,
+        preRegistered,
+        leads,
+        left,
+        auPairs,
+        nonAuPairs,
+        hommes,
+        femmes,
+      });
     } catch (err) {
       setLoadError((err as Error).message);
       setStats(null);
@@ -136,6 +153,7 @@ export default function Flce() {
   const conversion = stats?.total ? (stats.enrolled / stats.total) * 100 : 0;
   const preRegRate = stats?.total ? (stats.preRegistered / stats.total) * 100 : 0;
   const leadRate = stats?.total ? (stats.leads / stats.total) * 100 : 0;
+  const leftRate = stats?.total ? (stats.left / stats.total) * 100 : 0;
 
   return (
     <PageShell>
@@ -166,7 +184,7 @@ export default function Flce() {
               <p className="text-sm font-semibold text-gray-900">Statuts</p>
               <p className="text-xs text-gray-500">Inscrits, pre-inscrits, leads</p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
               <StatCard label="Total eleves" value={stats.total} tone="sky" icon="📘" />
               <StatCard
                 label="Inscrits"
@@ -189,6 +207,7 @@ export default function Flce() {
                 tone="slate"
                 icon="🧭"
               />
+              <StatCard label="Sortis" value={stats.left} tone="rose" icon="🚪" />
             </div>
           </section>
 
@@ -236,6 +255,18 @@ export default function Flce() {
                     <div
                       className="h-2 rounded-full bg-slate-400"
                       style={{ width: `${leadRate}%` }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex items-center justify-between text-xs text-gray-600">
+                    <span>Sortis</span>
+                    <span>{formatPercent(leftRate)}</span>
+                  </div>
+                  <div className="mt-2 h-2 rounded-full bg-gray-100">
+                    <div
+                      className="h-2 rounded-full bg-rose-400"
+                      style={{ width: `${leftRate}%` }}
                     />
                   </div>
                 </div>

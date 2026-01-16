@@ -6,7 +6,7 @@ export type AuPairDetail = {
 
 export type StudentRow = {
   id: string;
-  record_kind: "LEAD" | "PRE_REGISTERED" | "ENROLLED";
+  record_kind: "LEAD" | "PRE_REGISTERED" | "ENROLLED" | "LEFT";
   dossier_number: string | null;
   last_name: string;
   first_name: string;
@@ -18,6 +18,7 @@ export type StudentRow = {
   birth_date: string | null;
   birth_place: string | null;
   is_au_pair: boolean;
+  left_early: boolean | null;
   pre_registration: boolean;
   paid_150: boolean | null;
   paid_total: boolean;
@@ -25,7 +26,7 @@ export type StudentRow = {
   created_at: string;
 };
 
-export type Tab = "ENROLLED" | "PRE_REGISTERED" | "LEAD";
+export type Tab = "ENROLLED" | "PRE_REGISTERED" | "LEAD" | "LEFT";
 export type SortKey = "last_name" | "first_name";
 export type SortState = { key: SortKey; direction: "asc" | "desc" } | null;
 
@@ -40,6 +41,7 @@ export type EditFormState = {
   birth_date: string;
   birth_place: string;
   is_au_pair: boolean;
+  left_early: boolean;
   pre_registration: boolean;
   paid_150: boolean;
   paid_total: boolean;
