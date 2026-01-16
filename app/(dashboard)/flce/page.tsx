@@ -40,7 +40,7 @@ function StatCard({
             : "bg-slate-50 text-slate-900 ring-slate-100";
 
   return (
-    <div className="rounded-2xl border bg-white p-4 shadow-sm">
+    <div className="border bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between">
         <p className="text-xs uppercase tracking-wide text-gray-500">{label}</p>
         {icon && (
@@ -146,7 +146,7 @@ export default function Flce() {
 
       {stats && (
         <div className="space-y-8">
-          <section className="rounded-2xl border bg-[linear-gradient(135deg,_#f8fafc,_#eef2ff)] p-6 shadow-sm">
+          <section className="rounded-xl border bg-[linear-gradient(135deg,#f8fafc,#eef2ff)] p-6 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-wide text-gray-500">Tableau de bord</p>
@@ -193,7 +193,7 @@ export default function Flce() {
           </section>
 
           <section className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-2xl border bg-white p-5 shadow-sm">
+            <div className="rounded-xl border bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Repartition des statuts</p>
@@ -242,10 +242,10 @@ export default function Flce() {
               </div>
             </div>
 
-            <div className="rounded-2xl border bg-white p-5 shadow-sm">
+            <div className="rounded-xl border bg-white p-5 shadow-sm">
               <p className="text-sm font-semibold text-gray-900">Profil des eleves</p>
               <p className="text-xs text-gray-500">Au pair & genre</p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="mt-4 grid sm:grid-cols-2">
                 <StatCard label="Au pair" value={stats.auPairs} tone="sky" icon="🏡" />
                 <StatCard label="Non au pair" value={stats.nonAuPairs} tone="slate" icon="🎒" />
                 <StatCard label="Hommes" value={stats.hommes} tone="rose" icon="👦" />

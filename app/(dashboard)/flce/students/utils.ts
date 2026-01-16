@@ -32,13 +32,13 @@ export function formatYesNo(value: boolean | null) {
 
 export function formatGender(value: "M" | "F" | "X" | null) {
   if (!value) return "—";
-  if (value === "M") return "Homme";
-  if (value === "F") return "Femme";
+  if (value === "M") return "Mr.";
+  if (value === "F") return "Mrs.";
   return "X";
 }
 
-export function formatAge(value: string | null) {
-  if (!value) return "—";
+export function getAge(value: string | null) {
+  if (!value) return null;
   const birth = new Date(value);
   const today = new Date();
   let age = today.getFullYear() - birth.getFullYear();
@@ -46,7 +46,12 @@ export function formatAge(value: string | null) {
   if (monthDelta < 0 || (monthDelta === 0 && today.getDate() < birth.getDate())) {
     age -= 1;
   }
-  return String(age);
+  return age;
+}
+
+export function formatAge(value: string | null) {
+  const age = getAge(value);
+  return age === null ? "—" : String(age);
 }
 
 export function toInputDate(value: string | null) {

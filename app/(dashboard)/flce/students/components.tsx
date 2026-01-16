@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useState } from "react";
 import { cn } from "@/components/accueil/posts/cn";
 import { Modal } from "@/components/accueil/calendar/Modal";
 import type { EditFormState, SortKey, SortState, StudentRow, Tab } from "./types";
@@ -191,6 +191,152 @@ export const StudentsTable = memo(StudentsTableBase);
 
 StudentsTable.displayName = "StudentsTable";
 
+type StudentFiltersState = {
+  gender: "" | "M" | "F" | "X";
+  classCode: string;
+  birthPlace: string;
+  isAuPair: "" | "true" | "false";
+  preRegistration: "" | "true" | "false";
+  ageMin: string;
+  ageMax: string;
+};
+
+type StudentFiltersProps = {
+  filters: StudentFiltersState;
+  total: number;
+  visible: number;
+  onChange: (filters: StudentFiltersState) => void;
+  onReset: () => void;
+};
+
+function StudentFiltersBase({ filters, total, visible, onChange, onReset }: StudentFiltersProps) {
+  const [isOpen, setIsOpen] = useState(true);
+
+  return (
+    <div className="rounded-xl border bg-white p-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <button
+          className="flex items-center gap-2 text-sm font-semibold text-gray-900"
+          type="button"
+          onClick={() => setIsOpen((prev) => !prev)}
+        >
+          Filtres
+          <span className="text-xs text-gray-400">{isOpen ? "▲" : "▼"}</span>
+        </button>
+        <p className="text-xs text-gray-500">
+          Affichés: {visible} / {total}
+        </p>
+      </div>
+      {isOpen && (
+        <>
+          <div className="mt-3 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <label className="block text-sm font-semibold text-gray-900">
+              Civilité
+              <select
+                className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                value={filters.gender}
+                onChange={(event) =>
+                  onChange({ ...filters, gender: event.target.value as "" | "M" | "F" | "X" })
+                }
+              >
+                <option value="">Toutes</option>
+                <option value="M">Homme</option>
+                <option value="F">Femme</option>
+                <option value="X">X</option>
+              </select>
+            </label>
+            <label className="block text-sm font-semibold text-gray-900">
+              Classe
+              <input
+                className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                value={filters.classCode}
+                onChange={(event) => onChange({ ...filters, classCode: event.target.value })}
+              />
+            </label>
+            <label className="block text-sm font-semibold text-gray-900">
+              Lieu de naissance
+              <input
+                className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                value={filters.birthPlace}
+                onChange={(event) => onChange({ ...filters, birthPlace: event.target.value })}
+              />
+            </label>
+            <label className="block text-sm font-semibold text-gray-900">
+              Au pair
+              <select
+                className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                value={filters.isAuPair}
+                onChange={(event) =>
+                  onChange({
+                    ...filters,
+                    isAuPair: event.target.value as "" | "true" | "false",
+                  })
+                }
+              >
+                <option value="">Tous</option>
+                <option value="true">Oui</option>
+                <option value="false">Non</option>
+              </select>
+            </label>
+            <label className="block text-sm font-semibold text-gray-900">
+              Pré-inscription
+              <select
+                className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                value={filters.preRegistration}
+                onChange={(event) =>
+                  onChange({
+                    ...filters,
+                    preRegistration: event.target.value as "" | "true" | "false",
+                  })
+                }
+              >
+                <option value="">Toutes</option>
+                <option value="true">Oui</option>
+                <option value="false">Non</option>
+              </select>
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block text-sm font-semibold text-gray-900">
+                Age min
+                <input
+                  className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  type="number"
+                  min={0}
+                  value={filters.ageMin}
+                  onChange={(event) => onChange({ ...filters, ageMin: event.target.value })}
+                />
+              </label>
+              <label className="block text-sm font-semibold text-gray-900">
+                Age max
+                <input
+                  className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  type="number"
+                  min={0}
+                  value={filters.ageMax}
+                  onChange={(event) => onChange({ ...filters, ageMax: event.target.value })}
+                />
+              </label>
+            </div>
+          </div>
+          <div className="mt-3 flex justify-end">
+            <button
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              type="button"
+              onClick={onReset}
+            >
+              Reinitialiser
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+export const StudentFilters = memo(StudentFiltersBase);
+
+StudentFilters.displayName = "StudentFilters";
+
 type StudentFormFieldsProps = {
   form: EditFormState;
   onChange: (patch: Partial<EditFormState>) => void;
@@ -245,8 +391,8 @@ function StudentFormFieldsBase({ form, onChange }: StudentFormFieldsProps) {
           onChange={(event) => onChange({ gender: event.target.value as "M" | "F" | "X" | "" })}
         >
           <option value="">—</option>
-          <option value="M">Homme</option>
-          <option value="F">Femme</option>
+          <option value="M">Mr.</option>
+          <option value="F">Mrs.</option>
           <option value="X">X</option>
         </select>
       </label>

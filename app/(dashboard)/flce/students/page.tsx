@@ -8,11 +8,12 @@ import {
   ConfirmDeleteModal,
   StudentCreateModal,
   StudentEditModal,
+  StudentFilters,
   StudentsTable,
   TabButton,
 } from "./components";
 import type { EditFormState, SortKey, SortState, StudentRow, Tab } from "./types";
-import { buildEditForm, deriveRecordKind, EMPTY_FORM, validateEditForm } from "./utils";
+import { buildEditForm, deriveRecordKind, EMPTY_FORM, getAge, validateEditForm } from "./utils";
 
 export default function StudentsPage() {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
@@ -30,6 +31,15 @@ export default function StudentsPage() {
   const [createForm, setCreateForm] = useState<EditFormState>({ ...EMPTY_FORM });
   const [createErrors, setCreateErrors] = useState<string[]>([]);
   const [deleteCandidate, setDeleteCandidate] = useState<StudentRow | null>(null);
+  const [filters, setFilters] = useState({
+    gender: "" as "" | "M" | "F" | "X",
+    classCode: "",
+    birthPlace: "",
+    isAuPair: "" as "" | "true" | "false",
+    preRegistration: "" as "" | "true" | "false",
+    ageMin: "",
+    ageMax: "",
+  });
 
   const active = useMemo(() => {
     if (tab === "ENROLLED") return enrolled;
@@ -37,9 +47,48 @@ export default function StudentsPage() {
     return leads;
   }, [enrolled, leads, preRegistered, tab]);
 
+  const filteredActive = useMemo(() => {
+    return active.filter((student) => {
+      if (filters.gender && student.gender !== filters.gender) return false;
+      if (
+        filters.classCode &&
+        !student.class_code?.toLowerCase().includes(filters.classCode.trim().toLowerCase())
+      ) {
+        return false;
+      }
+      if (
+        filters.birthPlace &&
+        !student.birth_place?.toLowerCase().includes(filters.birthPlace.trim().toLowerCase())
+      ) {
+        return false;
+      }
+      if (filters.isAuPair) {
+        const required = filters.isAuPair === "true";
+        if (student.is_au_pair !== required) return false;
+      }
+      if (filters.preRegistration) {
+        const required = filters.preRegistration === "true";
+        if (student.pre_registration !== required) return false;
+      }
+      if (filters.ageMin || filters.ageMax) {
+        const age = getAge(student.birth_date);
+        if (age === null) return false;
+        if (filters.ageMin) {
+          const min = Number(filters.ageMin);
+          if (!Number.isNaN(min) && age < min) return false;
+        }
+        if (filters.ageMax) {
+          const max = Number(filters.ageMax);
+          if (!Number.isNaN(max) && age > max) return false;
+        }
+      }
+      return true;
+    });
+  }, [active, filters]);
+
   const sortedActive = useMemo(() => {
-    if (!sortState) return active;
-    const next = [...active];
+    if (!sortState) return filteredActive;
+    const next = [...filteredActive];
     next.sort((a, b) => {
       const left = (a[sortState.key] ?? "").toString();
       const right = (b[sortState.key] ?? "").toString();
@@ -47,7 +96,7 @@ export default function StudentsPage() {
       return sortState.direction === "asc" ? result : -result;
     });
     return next;
-  }, [active, sortState]);
+  }, [filteredActive, sortState]);
 
   const emptyColSpan = useMemo(() => {
     if (tab === "ENROLLED") return 16;
@@ -331,6 +380,24 @@ export default function StudentsPage() {
           Ajouter un élève
         </button>
       </div>
+
+      <StudentFilters
+        filters={filters}
+        total={active.length}
+        visible={sortedActive.length}
+        onChange={setFilters}
+        onReset={() =>
+          setFilters({
+            gender: "",
+            classCode: "",
+            birthPlace: "",
+            isAuPair: "",
+            preRegistration: "",
+            ageMin: "",
+            ageMax: "",
+          })
+        }
+      />
 
       {loading && <p className="text-sm text-gray-500">Chargement…</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
