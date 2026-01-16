@@ -186,6 +186,216 @@ export const StudentsTable = memo(StudentsTableBase);
 
 StudentsTable.displayName = "StudentsTable";
 
+type StudentFormFieldsProps = {
+  form: EditFormState;
+  onChange: (patch: Partial<EditFormState>) => void;
+};
+
+function StudentFormFieldsBase({ form, onChange }: StudentFormFieldsProps) {
+  return (
+    <>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="block text-sm font-semibold text-gray-900">
+          Prénom
+          <input
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            value={form.first_name}
+            onChange={(event) => onChange({ first_name: event.target.value })}
+          />
+        </label>
+        <label className="block text-sm font-semibold text-gray-900">
+          Nom
+          <input
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            value={form.last_name}
+            onChange={(event) => onChange({ last_name: event.target.value })}
+          />
+        </label>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="block text-sm font-semibold text-gray-900">
+          Classe
+          <input
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            value={form.class_code}
+            onChange={(event) => onChange({ class_code: event.target.value })}
+          />
+        </label>
+        <label className="block text-sm font-semibold text-gray-900">
+          Note
+          <input
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            value={form.note}
+            onChange={(event) => onChange({ note: event.target.value })}
+          />
+        </label>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="block text-sm font-semibold text-gray-900">
+          Arrivée
+          <input
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            type="date"
+            value={form.arrival_date}
+            onChange={(event) => onChange({ arrival_date: event.target.value })}
+          />
+        </label>
+        <label className="block text-sm font-semibold text-gray-900">
+          Départ
+          <input
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            type="date"
+            value={form.departure_date}
+            onChange={(event) => onChange({ departure_date: event.target.value })}
+          />
+        </label>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="block text-sm font-semibold text-gray-900">
+          Date de naissance
+          <input
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            type="date"
+            value={form.birth_date}
+            onChange={(event) => onChange({ birth_date: event.target.value })}
+          />
+        </label>
+        <label className="block text-sm font-semibold text-gray-900">
+          Lieu de naissance
+          <input
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            value={form.birth_place}
+            onChange={(event) => onChange({ birth_place: event.target.value })}
+          />
+        </label>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="block text-sm font-semibold text-gray-900">
+          Au pair
+          <select
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            value={form.is_au_pair ? "true" : "false"}
+            onChange={(event) => {
+              const nextValue = event.target.value === "true";
+              onChange({
+                is_au_pair: nextValue,
+                family_name1: nextValue ? form.family_name1 : "",
+                family_name2: nextValue ? form.family_name2 : "",
+                family_mail: nextValue ? form.family_mail : "",
+              });
+            }}
+          >
+            <option value="false">Non</option>
+            <option value="true">Oui</option>
+          </select>
+        </label>
+        <label className="block text-sm font-semibold text-gray-900">
+          Numéro de dossier
+          <input
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            value={form.dossier_number}
+            onChange={(event) => onChange({ dossier_number: event.target.value })}
+          />
+        </label>
+      </div>
+
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <label className="block text-sm font-semibold text-gray-900">
+          Pré-inscription
+          <select
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            value={form.pre_registration ? "true" : "false"}
+            onChange={(event) => {
+              const nextValue = event.target.value === "true";
+              onChange({ pre_registration: nextValue, paid_150: nextValue });
+            }}
+          >
+            <option value="false">Non</option>
+            <option value="true">Oui</option>
+          </select>
+        </label>
+        <label className="block text-sm font-semibold text-gray-900">
+          150€
+          <select
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            value={form.paid_150 ? "true" : "false"}
+            onChange={(event) => {
+              const nextPaid = event.target.value === "true";
+              onChange({ paid_150: nextPaid, pre_registration: nextPaid });
+            }}
+          >
+            <option value="false">Non</option>
+            <option value="true">Oui</option>
+          </select>
+        </label>
+        <label className="block text-sm font-semibold text-gray-900">
+          Paiement total
+          <select
+            className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            value={form.paid_total ? "true" : "false"}
+            onChange={(event) => onChange({ paid_total: event.target.value === "true" })}
+          >
+            <option value="false">Non</option>
+            <option value="true">Oui</option>
+          </select>
+        </label>
+      </div>
+
+      {form.is_au_pair && (
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
+          <p className="font-semibold text-gray-900">Famille au pair</p>
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <label className="block text-sm font-semibold text-gray-900">
+              Nom famille 1
+              <input
+                className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                value={form.family_name1}
+                onChange={(event) => onChange({ family_name1: event.target.value })}
+              />
+            </label>
+            <label className="block text-sm font-semibold text-gray-900">
+              Nom famille 2
+              <input
+                className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                value={form.family_name2}
+                onChange={(event) => onChange({ family_name2: event.target.value })}
+              />
+            </label>
+          </div>
+          <label className="mt-3 block text-sm font-semibold text-gray-900">
+            Email famille
+            <input
+              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              type="email"
+              value={form.family_mail}
+              onChange={(event) => onChange({ family_mail: event.target.value })}
+            />
+          </label>
+        </div>
+      )}
+
+      <div className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
+        Statut calculé:{" "}
+        <span className="font-semibold">
+          {deriveRecordKind(form.pre_registration, form.paid_total) === "ENROLLED"
+            ? "Inscrit"
+            : deriveRecordKind(form.pre_registration, form.paid_total) === "PRE_REGISTERED"
+              ? "En cours"
+              : "Lead"}
+        </span>
+      </div>
+    </>
+  );
+}
+
+const StudentFormFields = memo(StudentFormFieldsBase);
+
+StudentFormFields.displayName = "StudentFormFields";
+
 type StudentEditModalProps = {
   student: StudentRow;
   form: EditFormState;
@@ -222,200 +432,7 @@ function StudentEditModalBase({
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="block text-sm font-semibold text-gray-900">
-            Prénom
-            <input
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              value={form.first_name}
-              onChange={(event) => onChange({ first_name: event.target.value })}
-            />
-          </label>
-          <label className="block text-sm font-semibold text-gray-900">
-            Nom
-            <input
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              value={form.last_name}
-              onChange={(event) => onChange({ last_name: event.target.value })}
-            />
-          </label>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="block text-sm font-semibold text-gray-900">
-            Classe
-            <input
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              value={form.class_code}
-              onChange={(event) => onChange({ class_code: event.target.value })}
-            />
-          </label>
-          <label className="block text-sm font-semibold text-gray-900">
-            Note
-            <input
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              value={form.note}
-              onChange={(event) => onChange({ note: event.target.value })}
-            />
-          </label>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="block text-sm font-semibold text-gray-900">
-            Arrivée
-            <input
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              type="date"
-              value={form.arrival_date}
-              onChange={(event) => onChange({ arrival_date: event.target.value })}
-            />
-          </label>
-          <label className="block text-sm font-semibold text-gray-900">
-            Départ
-            <input
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              type="date"
-              value={form.departure_date}
-              onChange={(event) => onChange({ departure_date: event.target.value })}
-            />
-          </label>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="block text-sm font-semibold text-gray-900">
-            Date de naissance
-            <input
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              type="date"
-              value={form.birth_date}
-              onChange={(event) => onChange({ birth_date: event.target.value })}
-            />
-          </label>
-          <label className="block text-sm font-semibold text-gray-900">
-            Lieu de naissance
-            <input
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              value={form.birth_place}
-              onChange={(event) => onChange({ birth_place: event.target.value })}
-            />
-          </label>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="block text-sm font-semibold text-gray-900">
-            Au pair
-            <select
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              value={form.is_au_pair ? "true" : "false"}
-              onChange={(event) => {
-                const nextValue = event.target.value === "true";
-                onChange({
-                  is_au_pair: nextValue,
-                  family_name1: nextValue ? form.family_name1 : "",
-                  family_name2: nextValue ? form.family_name2 : "",
-                  family_mail: nextValue ? form.family_mail : "",
-                });
-              }}
-            >
-              <option value="false">Non</option>
-              <option value="true">Oui</option>
-            </select>
-          </label>
-          <label className="block text-sm font-semibold text-gray-900">
-            Numéro de dossier
-            <input
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              value={form.dossier_number}
-              onChange={(event) => onChange({ dossier_number: event.target.value })}
-            />
-          </label>
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <label className="block text-sm font-semibold text-gray-900">
-            Pré-inscription
-            <select
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              value={form.pre_registration ? "true" : "false"}
-              onChange={(event) => {
-                const nextValue = event.target.value === "true";
-                onChange({ pre_registration: nextValue, paid_150: nextValue });
-              }}
-            >
-              <option value="false">Non</option>
-              <option value="true">Oui</option>
-            </select>
-          </label>
-          <label className="block text-sm font-semibold text-gray-900">
-            150€
-            <select
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              value={form.paid_150 ? "true" : "false"}
-              onChange={(event) => {
-                const nextPaid = event.target.value === "true";
-                onChange({ paid_150: nextPaid, pre_registration: nextPaid });
-              }}
-            >
-              <option value="false">Non</option>
-              <option value="true">Oui</option>
-            </select>
-          </label>
-          <label className="block text-sm font-semibold text-gray-900">
-            Paiement total
-            <select
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-              value={form.paid_total ? "true" : "false"}
-              onChange={(event) => onChange({ paid_total: event.target.value === "true" })}
-            >
-              <option value="false">Non</option>
-              <option value="true">Oui</option>
-            </select>
-          </label>
-        </div>
-
-        {form.is_au_pair && (
-          <div className="rounded-md border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
-            <p className="font-semibold text-gray-900">Famille au pair</p>
-            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <label className="block text-sm font-semibold text-gray-900">
-                Nom famille 1
-                <input
-                  className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                  value={form.family_name1}
-                  onChange={(event) => onChange({ family_name1: event.target.value })}
-                />
-              </label>
-              <label className="block text-sm font-semibold text-gray-900">
-                Nom famille 2
-                <input
-                  className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                  value={form.family_name2}
-                  onChange={(event) => onChange({ family_name2: event.target.value })}
-                />
-              </label>
-            </div>
-            <label className="mt-3 block text-sm font-semibold text-gray-900">
-              Email famille
-              <input
-                className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                type="email"
-                value={form.family_mail}
-                onChange={(event) => onChange({ family_mail: event.target.value })}
-              />
-            </label>
-          </div>
-        )}
-
-        <div className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
-          Statut calculé:{" "}
-          <span className="font-semibold">
-            {deriveRecordKind(form.pre_registration, form.paid_total) === "ENROLLED"
-              ? "Inscrit"
-              : deriveRecordKind(form.pre_registration, form.paid_total) === "PRE_REGISTERED"
-                ? "En cours"
-                : "Lead"}
-          </span>
-        </div>
+        <StudentFormFields form={form} onChange={onChange} />
 
         <div className="flex items-center justify-between gap-3">
           <button className="btn-action btn-action--delete" onClick={onDelete} type="button">
@@ -442,6 +459,59 @@ function StudentEditModalBase({
 export const StudentEditModal = memo(StudentEditModalBase);
 
 StudentEditModal.displayName = "StudentEditModal";
+
+type StudentCreateModalProps = {
+  form: EditFormState;
+  errors: string[];
+  onChange: (patch: Partial<EditFormState>) => void;
+  onClose: () => void;
+  onSave: () => void;
+};
+
+function StudentCreateModalBase({
+  form,
+  errors,
+  onChange,
+  onClose,
+  onSave,
+}: StudentCreateModalProps) {
+  return (
+    <Modal onClose={onClose}>
+      <div className="space-y-4">
+        <div>
+          <p className="text-sm text-gray-500">Nouvel élève</p>
+          <p className="text-sm font-semibold text-gray-900">Créer un élève</p>
+        </div>
+        {errors.length > 0 && (
+          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {errors.map((message) => (
+              <p key={message}>{message}</p>
+            ))}
+          </div>
+        )}
+
+        <StudentFormFields form={form} onChange={onChange} />
+
+        <div className="flex items-center justify-end gap-3">
+          <button
+            className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            onClick={onClose}
+            type="button"
+          >
+            Annuler
+          </button>
+          <button className="btn-primary" onClick={onSave} type="button">
+            Enregistrer
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+export const StudentCreateModal = memo(StudentCreateModalBase);
+
+StudentCreateModal.displayName = "StudentCreateModal";
 
 type ConfirmDeleteModalProps = {
   student: StudentRow;

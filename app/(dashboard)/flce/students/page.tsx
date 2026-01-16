@@ -6,6 +6,7 @@ import PageShell from "@/components/page_layout/PageShell";
 import PageHeader from "@/components/page_layout/PageHeader";
 import {
   ConfirmDeleteModal,
+  StudentCreateModal,
   StudentEditModal,
   StudentsTable,
   TabButton,
@@ -25,6 +26,9 @@ export default function StudentsPage() {
   const [editingStudent, setEditingStudent] = useState<StudentRow | null>(null);
   const [editForm, setEditForm] = useState<EditFormState>({ ...EMPTY_FORM });
   const [editingErrors, setEditingErrors] = useState<string[]>([]);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createForm, setCreateForm] = useState<EditFormState>({ ...EMPTY_FORM });
+  const [createErrors, setCreateErrors] = useState<string[]>([]);
   const [deleteCandidate, setDeleteCandidate] = useState<StudentRow | null>(null);
 
   const active = useMemo(() => {
@@ -91,6 +95,7 @@ export default function StudentsPage() {
   }, [supabase]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching triggers state updates by design.
     void load();
   }, [load]);
 
@@ -102,6 +107,16 @@ export default function StudentsPage() {
 
   const updateForm = useCallback((patch: Partial<EditFormState>) => {
     setEditForm((prev) => ({ ...prev, ...patch }));
+  }, []);
+
+  const startCreate = useCallback(() => {
+    setCreateForm({ ...EMPTY_FORM });
+    setCreateErrors([]);
+    setCreateOpen(true);
+  }, []);
+
+  const updateCreateForm = useCallback((patch: Partial<EditFormState>) => {
+    setCreateForm((prev) => ({ ...prev, ...patch }));
   }, []);
 
   const toggleSort = useCallback((key: SortKey) => {
@@ -119,6 +134,73 @@ export default function StudentsPage() {
   const requestDelete = useCallback((student: StudentRow) => {
     setDeleteCandidate(student);
   }, []);
+
+  const createStudent = useCallback(async () => {
+    setCreateErrors([]);
+    setLoading(true);
+    setError(null);
+
+    const nextErrors = validateEditForm(createForm);
+    if (nextErrors.length > 0) {
+      setCreateErrors(nextErrors);
+      setLoading(false);
+      return;
+    }
+
+    const recordKind = deriveRecordKind(createForm.pre_registration, createForm.paid_total);
+    const dossierNumber = createForm.dossier_number.trim();
+
+    const payload = {
+      first_name: createForm.first_name.trim(),
+      last_name: createForm.last_name.trim(),
+      class_code: createForm.class_code.trim() || null,
+      note: createForm.note.trim() || null,
+      arrival_date: createForm.arrival_date || null,
+      departure_date: createForm.departure_date || null,
+      birth_date: createForm.birth_date || null,
+      birth_place: createForm.birth_place.trim() || null,
+      is_au_pair: createForm.is_au_pair,
+      pre_registration: createForm.pre_registration,
+      paid_150: createForm.paid_150 ? true : null,
+      paid_total: createForm.paid_total,
+      dossier_number: dossierNumber || null,
+      record_kind: recordKind,
+    };
+
+    const { data: created, error: insertError } = await supabase
+      .from("students")
+      .insert(payload)
+      .select("id")
+      .single();
+
+    if (insertError) {
+      setError(insertError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (createForm.is_au_pair && created?.id) {
+      const { error: auPairError } = await supabase
+        .from("au_pair_details")
+        .upsert(
+          {
+            student_id: created.id,
+            family_name1: createForm.family_name1.trim() || null,
+            family_name2: createForm.family_name2.trim() || null,
+            family_mail: createForm.family_mail.trim() || null,
+          },
+          { onConflict: "student_id" }
+        );
+      if (auPairError) {
+        setError(auPairError.message);
+        setLoading(false);
+        return;
+      }
+    }
+
+    setCreateOpen(false);
+    await load();
+  }, [createForm, load, supabase]);
 
   const saveEditingStudent = useCallback(async () => {
     if (!editingStudent) return;
@@ -225,18 +307,27 @@ export default function StudentsPage() {
     <PageShell>
       <PageHeader title="Elèves FLCE" />
 
-      <div className="flex gap-2">
-        <TabButton
-          label="Inscrits"
-          active={tab === "ENROLLED"}
-          onClick={() => setTab("ENROLLED")}
-        />
-        <TabButton
-          label="Pré-inscrits"
-          active={tab === "PRE_REGISTERED"}
-          onClick={() => setTab("PRE_REGISTERED")}
-        />
-        <TabButton label="Non inscrits" active={tab === "LEAD"} onClick={() => setTab("LEAD")} />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-2">
+          <TabButton
+            label={`Inscrits (${enrolled.length})`}
+            active={tab === "ENROLLED"}
+            onClick={() => setTab("ENROLLED")}
+          />
+          <TabButton
+            label={`Pré-inscrits (${preRegistered.length})`}
+            active={tab === "PRE_REGISTERED"}
+            onClick={() => setTab("PRE_REGISTERED")}
+          />
+          <TabButton
+            label={`Non inscrits (${leads.length})`}
+            active={tab === "LEAD"}
+            onClick={() => setTab("LEAD")}
+          />
+        </div>
+        <button className="btn-primary" onClick={startCreate} type="button">
+          Ajouter un élève
+        </button>
       </div>
 
       {loading && <p className="text-sm text-gray-500">Chargement…</p>}
@@ -264,6 +355,16 @@ export default function StudentsPage() {
           onClose={() => setEditingStudent(null)}
           onSave={saveEditingStudent}
           onDelete={() => requestDelete(editingStudent)}
+        />
+      )}
+
+      {createOpen && (
+        <StudentCreateModal
+          form={createForm}
+          errors={createErrors}
+          onChange={updateCreateForm}
+          onClose={() => setCreateOpen(false)}
+          onSave={createStudent}
         />
       )}
 
