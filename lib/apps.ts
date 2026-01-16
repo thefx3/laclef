@@ -1,6 +1,6 @@
 // lib/apps.ts
 import type { LucideIcon } from "lucide-react";
-import { BookUser, ChartNoAxesCombined, Croissant, Headset, Home, LibraryBig, Music, PenSquare, PersonStanding, Users } from "lucide-react";
+import { Blocks, BookUser, ChartNoAxesCombined, Croissant, Files, Headset, Home, LibraryBig, Music, PenSquare, PersonStanding, Users } from "lucide-react";
 
 export const APPS = [
   { key: "accueil", href: "/accueil", label: "Accueil", Icon: Headset, colorClass: "text-green-500" },
@@ -35,6 +35,8 @@ export const APP_NAV: Record<AppKey, NavLink[]> = {
   flce: [
     { href: "/flce", label: "Home", Icon: Home },
     { href: "/flce/students", label: "Elèves", Icon: BookUser },
+    { href: "/flce/classes", label: "Classes", Icon: Blocks},
+    { href: "/flce/documents", label: "Documents", Icon: Files },
     { href: "/flce/stats", label: "Stats", Icon: ChartNoAxesCombined },
 
     { href: "/flce/users", label: "Utilisateurs", Icon: Users }
