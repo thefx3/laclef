@@ -1,7 +1,7 @@
 export type AuPairDetail = {
   family_name1: string | null;
   family_name2: string | null;
-  family_mail: string | null;
+  family_email: string | null;
 };
 
 export type StudentRow = {
@@ -23,7 +23,7 @@ export type StudentRow = {
   pre_registration: boolean;
   paid_150: boolean | null;
   paid_total: boolean;
-  au_pair_details: AuPairDetail[] | null;
+  au_pair_details: AuPairDetail[] | AuPairDetail | null;
   created_at: string;
 };
 
@@ -50,5 +50,5 @@ export type EditFormState = {
   dossier_number: string;
   family_name1: string;
   family_name2: string;
-  family_mail: string;
+  family_email: string;
 };

@@ -482,7 +482,7 @@ function StudentFormFieldsBase({ form, onChange }: StudentFormFieldsProps) {
                 is_au_pair: nextValue,
                 family_name1: nextValue ? form.family_name1 : "",
                 family_name2: nextValue ? form.family_name2 : "",
-                family_mail: nextValue ? form.family_mail : "",
+                family_email: nextValue ? form.family_email : "",
               });
             }}
           >
@@ -568,8 +568,8 @@ function StudentFormFieldsBase({ form, onChange }: StudentFormFieldsProps) {
             <input
               className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
               type="email"
-              value={form.family_mail}
-              onChange={(event) => onChange({ family_mail: event.target.value })}
+              value={form.family_email}
+              onChange={(event) => onChange({ family_email: event.target.value })}
             />
           </label>
         </div>

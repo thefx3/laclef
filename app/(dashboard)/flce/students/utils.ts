@@ -19,7 +19,7 @@ export const EMPTY_FORM: EditFormState = {
   dossier_number: "",
   family_name1: "",
   family_name2: "",
-  family_mail: "",
+  family_email: "",
 };
 
 export function formatDate(value: string | null) {
@@ -69,7 +69,8 @@ export function deriveRecordKind(preRegistration: boolean, paidTotal: boolean) {
 
 export function buildEditForm(student: StudentRow | null): EditFormState {
   if (!student) return { ...EMPTY_FORM };
-  const auPair = student.au_pair_details?.[0] ?? null;
+  const auPairDetails = student.au_pair_details;
+  const auPair = Array.isArray(auPairDetails) ? auPairDetails[0] : auPairDetails ?? null;
   return {
     first_name: student.first_name ?? "",
     last_name: student.last_name ?? "",
@@ -89,7 +90,7 @@ export function buildEditForm(student: StudentRow | null): EditFormState {
     dossier_number: student.dossier_number ?? "",
     family_name1: auPair?.family_name1 ?? "",
     family_name2: auPair?.family_name2 ?? "",
-    family_mail: auPair?.family_mail ?? "",
+    family_email: auPair?.family_email ?? "",
   };
 }
 

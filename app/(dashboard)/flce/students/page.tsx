@@ -307,7 +307,7 @@ export default function StudentsPage() {
             student_id: created.id,
             family_name1: createForm.family_name1.trim() || null,
             family_name2: createForm.family_name2.trim() || null,
-            family_mail: createForm.family_mail.trim() || null,
+            family_email: createForm.family_email.trim() || null,
           },
           { onConflict: "student_id" }
         );
@@ -399,7 +399,7 @@ export default function StudentsPage() {
             student_id: editingStudent.id,
             family_name1: editForm.family_name1.trim() || null,
             family_name2: editForm.family_name2.trim() || null,
-            family_mail: editForm.family_mail.trim() || null,
+            family_email: editForm.family_email.trim() || null,
           },
           { onConflict: "student_id" }
         );
