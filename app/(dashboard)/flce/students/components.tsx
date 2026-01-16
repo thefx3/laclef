@@ -210,7 +210,7 @@ type StudentFiltersProps = {
 };
 
 function StudentFiltersBase({ filters, total, visible, onChange, onReset }: StudentFiltersProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="rounded-xl border bg-white p-4 shadow-sm">
