@@ -50,9 +50,9 @@ export default function StudentsPage() {
   }, [active, sortState]);
 
   const emptyColSpan = useMemo(() => {
-    if (tab === "ENROLLED") return 15;
-    if (tab === "PRE_REGISTERED") return 14;
-    return 11;
+    if (tab === "ENROLLED") return 16;
+    if (tab === "PRE_REGISTERED") return 15;
+    return 12;
   }, [tab]);
 
   const load = useCallback(async () => {
@@ -155,6 +155,7 @@ export default function StudentsPage() {
       last_name: createForm.last_name.trim(),
       class_code: createForm.class_code.trim() || null,
       note: createForm.note.trim() || null,
+      gender: createForm.gender || null,
       arrival_date: createForm.arrival_date || null,
       departure_date: createForm.departure_date || null,
       birth_date: createForm.birth_date || null,
@@ -223,6 +224,7 @@ export default function StudentsPage() {
       last_name: editForm.last_name.trim(),
       class_code: editForm.class_code.trim() || null,
       note: editForm.note.trim() || null,
+      gender: editForm.gender || null,
       arrival_date: editForm.arrival_date || null,
       departure_date: editForm.departure_date || null,
       birth_date: editForm.birth_date || null,

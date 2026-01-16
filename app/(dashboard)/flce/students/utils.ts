@@ -5,6 +5,7 @@ export const EMPTY_FORM: EditFormState = {
   last_name: "",
   class_code: "",
   note: "",
+  gender: "",
   arrival_date: "",
   departure_date: "",
   birth_date: "",
@@ -27,6 +28,13 @@ export function formatDate(value: string | null) {
 export function formatYesNo(value: boolean | null) {
   if (value === null) return "—";
   return value ? "Oui" : "Non";
+}
+
+export function formatGender(value: "M" | "F" | "X" | null) {
+  if (!value) return "—";
+  if (value === "M") return "Homme";
+  if (value === "F") return "Femme";
+  return "X";
 }
 
 export function formatAge(value: string | null) {
@@ -60,6 +68,7 @@ export function buildEditForm(student: StudentRow | null): EditFormState {
     last_name: student.last_name ?? "",
     class_code: student.class_code ?? "",
     note: student.note ?? "",
+    gender: student.gender ?? "",
     arrival_date: toInputDate(student.arrival_date),
     departure_date: toInputDate(student.departure_date),
     birth_date: toInputDate(student.birth_date),

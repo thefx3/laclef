@@ -4,7 +4,7 @@ import { memo } from "react";
 import { cn } from "@/components/accueil/posts/cn";
 import { Modal } from "@/components/accueil/calendar/Modal";
 import type { EditFormState, SortKey, SortState, StudentRow, Tab } from "./types";
-import { deriveRecordKind, formatAge, formatDate, formatYesNo } from "./utils";
+import { deriveRecordKind, formatAge, formatDate, formatGender, formatYesNo } from "./utils";
 
 type TabButtonProps = {
   label: string;
@@ -69,7 +69,7 @@ function StudentsTableBase({
   sortState,
   onSort,
   onRowClick,
-  onEdit,
+  // onEdit,
   onDelete,
 }: StudentsTableProps) {
   const sortLabel = (key: SortKey) => {
@@ -83,6 +83,7 @@ function StudentsTableBase({
         <thead className="bg-gray-50 text-gray-700">
           <tr>
             {tab !== "LEAD" && <th className="px-4 py-3 text-left">Dossier</th>}
+            <th className="px-4 py-3 text-left">Civilité</th>
             <th className="px-4 py-3 text-left">
               <SortHeader label="Nom" indicator={sortLabel("last_name")} onClick={() => onSort("last_name")} />
             </th>
@@ -121,13 +122,17 @@ function StudentsTableBase({
                 className="cursor-pointer transition-[filter,background-color] hover:bg-gray-50 hover:brightness-95"
                 onClick={() => onRowClick(student)}
               >
+                
                 {tab !== "LEAD" && (
-                  <td className="px-4 py-3">{student.dossier_number ?? "—"}</td>
-                )}
-                <td className="px-4 py-3">{student.last_name}</td>
-                <td className="px-4 py-3">{student.first_name}</td>
-                <td className="px-4 py-3">{student.class_code ?? "—"}</td>
+                <td className="px-4 py-3">{student.dossier_number ?? "—"}</td>
+              )}
+              <td className="px-4 py-3">{formatGender(student.gender)}</td>
+              <td className="px-4 py-3">{student.last_name}</td>
+              <td className="px-4 py-3">{student.first_name}</td>
+       
+              <td className="px-4 py-3">{student.class_code ?? "—"}</td>
                 <td className="px-4 py-3">{student.note ?? "—"}</td>
+            
                 <td className="px-4 py-3">{formatDate(student.arrival_date)}</td>
                 <td className="px-4 py-3">{formatDate(student.departure_date)}</td>
                 {tab !== "LEAD" && <td className="px-4 py-3">{formatAge(student.birth_date)}</td>}
@@ -151,7 +156,7 @@ function StudentsTableBase({
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <button
+                    {/* <button
                       className={cn("btn-action", "btn-action--edit")}
                       onClick={(event) => {
                         event.stopPropagation();
@@ -160,7 +165,7 @@ function StudentsTableBase({
                       type="button"
                     >
                       Modifier
-                    </button>
+                    </button> */}
                     <button
                       className={cn("btn-action", "btn-action--delete")}
                       onClick={(event) => {
@@ -231,6 +236,20 @@ function StudentFormFieldsBase({ form, onChange }: StudentFormFieldsProps) {
           />
         </label>
       </div>
+
+      <label className="block text-sm font-semibold text-gray-900">
+        Genre
+        <select
+          className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          value={form.gender || ""}
+          onChange={(event) => onChange({ gender: event.target.value as "M" | "F" | "X" | "" })}
+        >
+          <option value="">—</option>
+          <option value="M">Homme</option>
+          <option value="F">Femme</option>
+          <option value="X">X</option>
+        </select>
+      </label>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="block text-sm font-semibold text-gray-900">
@@ -526,7 +545,7 @@ function ConfirmDeleteModalBase({ student, onClose, onConfirm }: ConfirmDeleteMo
         <div>
           <p className="text-sm text-gray-500">Confirmer la suppression</p>
           <p className="text-sm font-semibold text-gray-900">
-            Supprimer l'élève {student.first_name} {student.last_name} ?
+            Supprimer l&apos;élève {student.first_name} {student.last_name} ?
           </p>
         </div>
         <div className="flex items-center justify-end gap-3">

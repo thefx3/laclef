@@ -12,6 +12,7 @@ export type StudentRow = {
   first_name: string;
   class_code: string | null;
   note: string | null;
+  gender: "M" | "F" | "X" | null;
   arrival_date: string | null;
   departure_date: string | null;
   birth_date: string | null;
@@ -33,6 +34,7 @@ export type EditFormState = {
   last_name: string;
   class_code: string;
   note: string;
+  gender: "M" | "F" | "X" | "";
   arrival_date: string;
   departure_date: string;
   birth_date: string;
