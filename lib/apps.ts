@@ -19,7 +19,9 @@ export const APP_NAV: Record<AppKey, NavLink[]> = {
     { href: "/accueil", label: "Home", Icon: Home },
     { href: "/accueil/posts", label: "Posts", Icon: PenSquare },
     { href: "/accueil/archives", label: "Archives", Icon: LibraryBig },
+    { href: "/accueil/stats", label: "Stats", Icon: ChartNoAxesCombined },
     { href: "/accueil/users", label: "Utilisateurs", Icon: Users },
+
   ],
 
   musique: [
