@@ -27,7 +27,7 @@ export default function AccueilStatsPage() {
     { label: "A venir", value: stats.upcoming, tone: "amber", icon: "🗓️" },
     { label: "Termines", value: stats.past, tone: "rose", icon: "🧾" },
     { label: "Cette semaine", value: stats.thisWeek, tone: "slate", icon: "📆" },
-  ];
+  ] as const;
 
   return (
     <PageShell>
