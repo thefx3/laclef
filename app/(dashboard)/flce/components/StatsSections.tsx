@@ -135,8 +135,7 @@ export function StatusBreakdown({
     <div className="rounded-xl border bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-semibold text-gray-900">Repartition des statuts</p>
-          <p className="text-xs text-gray-500">Lecture rapide de la conversion</p>
+          <p className="text-sm font-semibold text-gray-900">Repartition</p>
         </div>
         <p className="text-xs text-gray-400">Base: {total} eleves</p>
       </div>
@@ -199,7 +198,6 @@ export function ProfileCards({ stats }: { stats: Stats }) {
   return (
     <div className="rounded-xl border bg-white p-5 shadow-sm">
       <p className="text-sm font-semibold text-gray-900">Profil des eleves</p>
-      <p className="text-xs text-gray-500">Au pair & genre</p>
       <div className="mt-4 grid sm:grid-cols-2">
         <StatCard label="Au pair" value={stats.auPairs} tone="sky" icon="🏡" />
         <StatCard label="Non au pair" value={stats.nonAuPairs} tone="slate" icon="🎒" />

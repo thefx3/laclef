@@ -106,7 +106,6 @@ export function Highlights({
   return (
     <div className="rounded-xl border bg-white p-5 shadow-sm">
       <p className="text-sm font-semibold text-gray-900">Highlights</p>
-      <p className="text-xs text-gray-500">Prochaines publications</p>
       <div className="mt-4 space-y-4">
         <div>
           <p className="text-xs uppercase tracking-wide text-gray-500">
@@ -114,9 +113,9 @@ export function Highlights({
           </p>
           {nextUpcoming.length > 0 ? (
             <div className="mt-2 flex flex-col gap-2">
-              {nextUpcoming.map((post) => (
+              {nextUpcoming.map((post, index) => (
                 <div
-                  key={`${post.title}-${post.date}`}
+                  key={`${post.title}-${post.date}-${index}`}
                   className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2"
                 >
                   <p className="text-sm font-semibold text-gray-900">{post.title}</p>
