@@ -286,7 +286,7 @@ export default function Stats() {
             </div>
             <div className="rounded-2xl border bg-white p-5 shadow-sm">
               <p className="text-sm font-semibold text-gray-900">Genre</p>
-              <div className="mt-4 h-64">
+              <div className="h-75">
 
                 <ResponsiveContainer>
                   <PieChart>

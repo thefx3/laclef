@@ -112,7 +112,9 @@ export default function StudentsPage() {
     setLoading(true);
     setError(null);
 
-    const withSeason = (query: ReturnType<typeof supabase.from>) => {
+    const withSeason = <T extends { eq: (column: string, value: unknown) => T }>(
+      query: T
+    ) => {
       if (!selectedSeasonId) return query;
       return query.eq("season_id", selectedSeasonId);
     };
@@ -320,7 +322,7 @@ export default function StudentsPage() {
 
     setCreateOpen(false);
     await load();
-  }, [createForm, load, supabase, selectedSeasonId]);
+  }, [createForm, isDossierNumberTaken, load, supabase]);
 
   const saveEditingStudent = useCallback(async () => {
     if (!editingStudent) return;
@@ -422,7 +424,7 @@ export default function StudentsPage() {
 
     setEditingStudent(null);
     await load();
-  }, [editForm, editingStudent, load, supabase]);
+  }, [editForm, editingStudent, isDossierNumberTaken, load, supabase]);
 
   const confirmDeleteStudent = useCallback(async () => {
     if (!deleteCandidate) return;
