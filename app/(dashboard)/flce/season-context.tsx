@@ -25,6 +25,7 @@ type SeasonContextValue = {
   setSelectedSeasonId: (id: string | null) => void;
   loading: boolean;
   error: string | null;
+  reloadSeasons: () => Promise<void>;
 };
 
 const SeasonContext = createContext<SeasonContextValue | null>(null);
@@ -37,6 +38,24 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
   const [selectedSeasonId, setSelectedSeasonIdState] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const applySeasons = useCallback((nextSeasons: Season[]) => {
+    setSeasons(nextSeasons);
+
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const storedExists = stored && nextSeasons.some((s) => s.id === stored);
+    const currentSeason = nextSeasons.find((s) => s.is_current);
+
+    if (storedExists) {
+      setSelectedSeasonIdState(stored as string);
+    } else if (currentSeason) {
+      setSelectedSeasonIdState(currentSeason.id);
+    } else if (nextSeasons.length > 0) {
+      setSelectedSeasonIdState(nextSeasons[0].id);
+    } else {
+      setSelectedSeasonIdState(null);
+    }
+  }, []);
 
   const setSelectedSeasonId = useCallback((id: string | null) => {
     setSelectedSeasonIdState(id);
@@ -69,21 +88,7 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
       }
 
       const nextSeasons = (data as Season[]) ?? [];
-      setSeasons(nextSeasons);
-
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const storedExists = stored && nextSeasons.some((s) => s.id === stored);
-      const currentSeason = nextSeasons.find((s) => s.is_current);
-
-      if (storedExists) {
-        setSelectedSeasonIdState(stored as string);
-      } else if (currentSeason) {
-        setSelectedSeasonIdState(currentSeason.id);
-      } else if (nextSeasons.length > 0) {
-        setSelectedSeasonIdState(nextSeasons[0].id);
-      } else {
-        setSelectedSeasonIdState(null);
-      }
+      applySeasons(nextSeasons);
 
       setLoading(false);
     }
@@ -93,11 +98,32 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
     return () => {
       mounted = false;
     };
-  }, [supabase]);
+  }, [applySeasons, supabase]);
+
+  const reloadSeasons = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    const { data, error: fetchError } = await supabase
+      .from("seasons")
+      .select("id, code, start_date, end_date, is_current")
+      .order("start_date", { ascending: false });
+
+    if (fetchError) {
+      setError(fetchError.message);
+      setSeasons([]);
+      setSelectedSeasonIdState(null);
+      setLoading(false);
+      return;
+    }
+
+    const nextSeasons = (data as Season[]) ?? [];
+    applySeasons(nextSeasons);
+    setLoading(false);
+  }, [applySeasons, supabase]);
 
   const value = useMemo(
-    () => ({ seasons, selectedSeasonId, setSelectedSeasonId, loading, error }),
-    [seasons, selectedSeasonId, setSelectedSeasonId, loading, error]
+    () => ({ seasons, selectedSeasonId, setSelectedSeasonId, loading, error, reloadSeasons }),
+    [seasons, selectedSeasonId, setSelectedSeasonId, loading, error, reloadSeasons]
   );
 
   return <SeasonContext.Provider value={value}>{children}</SeasonContext.Provider>;
