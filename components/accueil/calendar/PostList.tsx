@@ -1,6 +1,7 @@
 "use client";
 
 import type { Post } from "@/lib/types";
+import { getPostTypeBadgeClass, getPostTypeBorderClass } from "@/lib/postTypeStyles";
 
 type Props = {
   posts: Post[];
@@ -22,11 +23,21 @@ export function PostList({
       {posts.map((post) => (
         <li
           key={post.id}
-          className="rounded border bg-gray-50 px-2 py-1 cursor-pointer hover:bg-gray-100 transition-colors"
+          className={`rounded border border-l-4 bg-gray-50 px-2 py-1 cursor-pointer hover:bg-gray-100 transition-colors ${getPostTypeBorderClass(
+            post.type
+          )}`}
           onClick={() => onSelectPost(post)}
           role="button"
         >
-          <div className="text-xs font-semibold text-gray-500">{post.type}</div>
+          <div className="mb-1">
+            <span
+              className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase ${getPostTypeBadgeClass(
+                post.type
+              )}`}
+            >
+              {post.type}
+            </span>
+          </div>
           <div className="font-medium">{post.title}</div>
           {showMeta && (
             <div className="text-[11px] text-gray-500">

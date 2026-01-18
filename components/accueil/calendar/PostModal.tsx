@@ -2,6 +2,7 @@
 
 import type { Post } from "@/lib/types";
 import { formatShortFR } from "@/lib/calendarUtils";
+import { getPostTypeBadgeClass } from "@/lib/postTypeStyles";
 import { Modal } from "./Modal";
 import { cn } from "@/components/accueil/posts/cn";
 
@@ -17,7 +18,15 @@ export function PostModal({ post, onClose, onEdit, onDelete }: Props) {
     <Modal onClose={onClose}>
       <div className="flex items-start justify-between mb-2 pr-4">
         <div>
-          <div className="text-xs font-semibold text-gray-500">{post.type}</div>
+          <div className="mb-1">
+            <span
+              className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase ${getPostTypeBadgeClass(
+                post.type
+              )}`}
+            >
+              {post.type}
+            </span>
+          </div>
           <div className="text-lg font-semibold text-gray-900">{post.title}</div>
         </div>
         {(onEdit || onDelete) && (
@@ -53,7 +62,15 @@ export function PostModal({ post, onClose, onEdit, onDelete }: Props) {
         </div>
         <div className="flex gap-2">
           <dt className="w-28 text-gray-500">Type</dt>
-          <dd className="font-medium">{post.type}</dd>
+          <dd className="font-medium">
+            <span
+              className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase ${getPostTypeBadgeClass(
+                post.type
+              )}`}
+            >
+              {post.type}
+            </span>
+          </dd>
         </div>
         <div className="flex gap-2">
           <dt className="w-28 text-gray-500">Début</dt>
