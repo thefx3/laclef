@@ -49,7 +49,7 @@ function StatCard({ label, value, helper, tone = "slate", icon }: StatCardProps)
   );
 }
 
-export function StatsGrid({ items }: { items: StatCardProps[] }) {
+export function StatsGrid({ items }: { items: readonly StatCardProps[] }) {
   return (
     <section>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">

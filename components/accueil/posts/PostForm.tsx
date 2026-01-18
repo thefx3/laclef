@@ -32,8 +32,8 @@ export function PostForm({ onCreate }: Props) {
       return;
     }
     const finalType = isFeatured ? "A_LA_UNE" : type;
-    const email = session?.user?.email?.trim() || "";
-    const displayName = email.split("@")[0] || author.trim() || "Inconnu";
+    const email = "";
+    const displayName = author.trim() || "Inconnu";
 
     try {
       setMessage(null);
