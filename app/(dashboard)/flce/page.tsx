@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import PageHeader from "@/components/page_layout/PageHeader";
 import PageShell from "@/components/page_layout/PageShell";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 import { useSeason } from "./season-context";
 import {
   DashboardHeader,
@@ -24,7 +24,6 @@ async function getCount(
 }
 
 export default function Flce() {
-  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const { selectedSeasonId, seasons, reloadSeasons, setSelectedSeasonId } = useSeason();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);

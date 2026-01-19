@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 import PageShell from "@/components/page_layout/PageShell";
 import PageHeader from "@/components/page_layout/PageHeader";
 import {
@@ -17,7 +17,6 @@ import { buildEditForm, deriveRecordKind, EMPTY_FORM, getAge, validateEditForm }
 import { useSeason } from "../season-context";
 
 export default function StudentsPage() {
-  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const { selectedSeasonId } = useSeason();
   const [tab, setTab] = useState<Tab>("ENROLLED");
   const [enrolled, setEnrolled] = useState<StudentRow[]>([]);

@@ -2,6 +2,7 @@
 
 import Header from "@/components/Header";
 import NavBar from "@/components/NavBar";
+import AuthGate from "@/components/AuthGate";
 import { APP_NAV, type AppKey } from "@/lib/apps";
 import { useSelectedLayoutSegments } from "next/navigation";
 import { SeasonProvider } from "./flce/season-context";
@@ -19,19 +20,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const links = appKey ? APP_NAV[appKey] : [];
 
     return (
-      <SeasonProvider>
-        <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
-          <NavBar links={links} />
+      <AuthGate>
+        <SeasonProvider>
+          <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
+            <NavBar links={links} />
 
-          <main className="flex flex-col w-full min-h-screen shadow-sm min-w-0">
-            <Header />
+            <main className="flex flex-col w-full min-h-screen shadow-sm min-w-0">
+              <Header />
 
-            <div className="p-4 flex-1 min-w-0 bg-white">
-              {children}
-            </div>
-          </main>
-        </div>
-      </SeasonProvider>
+              <div className="p-4 flex-1 min-w-0 bg-white">
+                {children}
+              </div>
+            </main>
+          </div>
+        </SeasonProvider>
+      </AuthGate>
     );
   }
   

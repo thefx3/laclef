@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import PageShell from "@/components/page_layout/PageShell";
 import PageHeader from "@/components/page_layout/PageHeader";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 import { Modal } from "@/components/accueil/calendar/Modal";
 import { cn } from "@/components/accueil/posts/cn";
 import type { Session } from "@supabase/supabase-js";
@@ -20,7 +20,6 @@ type UserProfileRow = {
 
   
 export default function UsersPage() {
-    const supabase = useMemo(() => createSupabaseBrowserClient(), []);
     const [session, setSession] = useState<Session | null>(null);
     const isGuest = !session?.user;
     const [users, setUsers] = useState<UserProfileRow[]>([]);

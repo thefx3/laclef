@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 
 type Season = {
   id: string;
@@ -33,7 +33,6 @@ const SeasonContext = createContext<SeasonContextValue | null>(null);
 const STORAGE_KEY = "flce:season_id";
 
 export function SeasonProvider({ children }: { children: ReactNode }) {
-  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [selectedSeasonId, setSelectedSeasonIdState] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

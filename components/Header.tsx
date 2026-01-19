@@ -3,14 +3,13 @@
 import Link from "next/link";
 import { APPS } from "@/lib/apps";
 import { usePathname, useRouter } from "next/navigation";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
 import { SeasonSelector } from "@/app/(dashboard)/flce/season-context";
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const supabase = createSupabaseBrowserClient();
 
   const [email, setEmail] = useState<string | null>(null);
 
@@ -31,8 +30,6 @@ export default function Header() {
         .select("role")
         .eq("user_id", user.id)
         .single();
-
-        console.log("profile", profile, "error", error);
 
       if (!mounted) return;
 

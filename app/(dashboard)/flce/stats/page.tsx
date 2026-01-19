@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import PageHeader from "@/components/page_layout/PageHeader";
 import PageShell from "@/components/page_layout/PageShell";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 import { getAge } from "@/app/(dashboard)/flce/students/utils";
 import { useSeason } from "../season-context";
 import {
@@ -69,7 +69,6 @@ function withColor(
 }
 
 export default function Stats() {
-  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const { selectedSeasonId } = useSeason();
   const [rows, setRows] = useState<StudentStatRow[]>([]);
   const [loading, setLoading] = useState(true);
