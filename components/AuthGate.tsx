@@ -18,27 +18,83 @@ export default function AuthGate({ children }: Props) {
   useEffect(() => {
     let active = true;
 
-    supabase.auth.getSession().then(({ data }) => {
+    const safeSetStatus = (next: "loading" | "ready" | "unauthenticated") => {
       if (!active) return;
-      if (!data.session) {
-        setStatus("unauthenticated");
-        return;
+      setStatus(next);
+    };
+
+    const withTimeout = <T,>(promise: Promise<T>, ms: number) =>
+      new Promise<T>((resolve, reject) => {
+        const timer = setTimeout(() => {
+          clearTimeout(timer);
+          reject(new Error("timeout"));
+        }, ms);
+        promise.then(
+          (value) => {
+            clearTimeout(timer);
+            resolve(value);
+          },
+          (err) => {
+            clearTimeout(timer);
+            reject(err);
+          }
+        );
+      });
+
+    const checkSession = async (showLoading: boolean) => {
+      if (showLoading) safeSetStatus("loading");
+      try {
+        const { data: sessionData, error: sessionError } = await withTimeout(
+          supabase.auth.getSession(),
+          8000
+        );
+        if (sessionError || !sessionData.session) {
+          safeSetStatus("unauthenticated");
+          return;
+        }
+
+        const { data: userData, error: userError } = await withTimeout(
+          supabase.auth.getUser(),
+          8000
+        );
+        if (userError || !userData.user) {
+          safeSetStatus("unauthenticated");
+          return;
+        }
+
+        safeSetStatus("ready");
+      } catch (_err) {
+        safeSetStatus("unauthenticated");
       }
-      setStatus("ready");
-    });
+    };
+
+    void checkSession(true);
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!active) return;
       if (!session) {
-        setStatus("unauthenticated");
+        safeSetStatus("unauthenticated");
         return;
       }
-      setStatus("ready");
+      safeSetStatus("ready");
     });
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        void checkSession(false);
+      }
+    };
+    const handleFocus = () => {
+      void checkSession(false);
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("focus", handleFocus);
 
     return () => {
       active = false;
       listener.subscription.unsubscribe();
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("focus", handleFocus);
     };
   }, [supabase]);
 
