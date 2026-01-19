@@ -53,6 +53,15 @@ export default function AuthGate({ children }: Props) {
           return;
         }
 
+        const { data: refreshedData, error: refreshError } = await withTimeout(
+          supabase.auth.refreshSession(),
+          8000
+        );
+        if (refreshError || !refreshedData.session) {
+          safeSetStatus("unauthenticated");
+          return;
+        }
+
         const { data: userData, error: userError } = await withTimeout(
           supabase.auth.getUser(),
           8000
