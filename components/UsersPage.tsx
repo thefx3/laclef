@@ -39,6 +39,9 @@ export default function UsersPage() {
     const [editingPassword, setEditingPassword] = useState("");
     const [selfPassword, setSelfPassword] = useState("");
     const [selfPasswordSuccess, setSelfPasswordSuccess] = useState<string | null>(null);
+    const [selfPasswordError, setSelfPasswordError] = useState<string | null>(null);
+    const [selfPasswordSaving, setSelfPasswordSaving] = useState(false);
+    const [adminPasswordSuccess, setAdminPasswordSuccess] = useState<string | null>(null);
 
     useEffect(() => {
       supabase.auth.getSession().then(({ data }) => setSession(data.session));
@@ -205,6 +208,9 @@ export default function UsersPage() {
 
       {loading && <p className="text-sm text-gray-500">Chargement...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
+      {adminPasswordSuccess && (
+        <p className="text-sm text-green-600">{adminPasswordSuccess}</p>
+      )}
 
       {!isGuest && (
         <section className="w-full rounded-xl border border-gray-200 bg-white p-4">
@@ -213,6 +219,9 @@ export default function UsersPage() {
           </h2>
           {selfPasswordSuccess && (
             <p className="text-sm text-green-600">{selfPasswordSuccess}</p>
+          )}
+          {selfPasswordError && (
+            <p className="text-sm text-red-600">{selfPasswordError}</p>
           )}
           <div className="flex flex-col gap-3 md:flex-row">
             <input
@@ -224,24 +233,48 @@ export default function UsersPage() {
             />
             <button
               className="btn-primary"
+              disabled={selfPasswordSaving}
               onClick={async () => {
+                setSelfPasswordSuccess(null);
+                setSelfPasswordError(null);
                 try {
                   if (!selfPassword) {
                     throw new Error("Mot de passe manquant");
                   }
-                  const { error } = await supabase.auth.updateUser({
-                    password: selfPassword,
+                  setSelfPasswordSaving(true);
+                  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+                  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+                  if (!supabaseUrl || !supabaseAnonKey) {
+                    throw new Error("Configuration Supabase manquante");
+                  }
+                  const { data, error: sessionError } = await supabase.auth.getSession();
+                  if (sessionError || !data.session?.access_token) {
+                    throw new Error("Session expirée, veuillez vous reconnecter.");
+                  }
+                  const res = await fetch(`${supabaseUrl}/auth/v1/user`, {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": "application/json",
+                      apikey: supabaseAnonKey,
+                      Authorization: `Bearer ${data.session.access_token}`,
+                    },
+                    body: JSON.stringify({ password: selfPassword }),
                   });
-                  if (error) throw error;
+                  if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.error_description || err.message || "Erreur serveur");
+                  }
                   setSelfPassword("");
                   setSelfPasswordSuccess("Mot de passe mis à jour.");
                   setError(null);
                 } catch (err) {
-                  setError((err as Error).message);
+                  setSelfPasswordError((err as Error).message);
+                } finally {
+                  setSelfPasswordSaving(false);
                 }
               }}
             >
-              Enregistrer
+              {selfPasswordSaving ? "Enregistrement..." : "Enregistrer"}
             </button>
           </div>
         </section>
@@ -291,6 +324,7 @@ export default function UsersPage() {
                             setEditingFirstName(user.first_name ?? "");
                             setEditingLastName(user.last_name ?? "");
                             setEditingPassword("");
+                            setAdminPasswordSuccess(null);
                           }}
                         >
                           Modifier
@@ -438,8 +472,12 @@ export default function UsersPage() {
                           : u
                       )
                     );
+                    setAdminPasswordSuccess(
+                      editingPassword ? "Mot de passe mis à jour." : null
+                    );
                     setEditingUser(null);
                   } catch (err) {
+                    setAdminPasswordSuccess(null);
                     setError((err as Error).message);
                   }
                 }}
